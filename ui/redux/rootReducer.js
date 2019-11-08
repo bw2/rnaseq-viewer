@@ -14,11 +14,7 @@ import modalReducers from './utils/modalReducer'
 
 // actions
 export const RECEIVE_DATA = 'RECEIVE_DATA'
-export const REQUEST_PROJECTS = 'REQUEST_PROJECTS'
-export const RECEIVE_SAVED_SEARCHES = 'RECEIVE_SAVED_SEARCHES'
-export const REQUEST_SAVED_SEARCHES = 'REQUEST_SAVED_SEARCHES'
 const REQUEST_GENES = 'REQUEST_GENES'
-const UPDATE_SAVED_VARIANT_TABLE_STATE = 'UPDATE_VARIANT_STATE'
 const UPDATE_IGV_VISIBILITY = 'UPDATE_IGV_VISIBILITY'
 
 // action creators
@@ -65,7 +61,6 @@ export const loadGenes = (geneIds) => {
   }
 }
 
-export const updateSavedVariantTable = updates => ({ type: UPDATE_SAVED_VARIANT_TABLE_STATE, updates })
 export const updateIgvReadsVisibility = updates => ({ type: UPDATE_IGV_VISIBILITY, updates })
 
 
