@@ -9,8 +9,8 @@ import styled from 'styled-components'
 import { Grid } from 'semantic-ui-react'
 
 import Header from './Header'
-import LeftSideBar from './LeftSideBar'
 import Footer from './Footer'
+
 
 const LayoutContainer = styled.div`
   height: calc(100% - 32px);
@@ -27,13 +27,9 @@ const BaseLayout = ({ children }) =>
     <Header />
     <ContentGrid>
       <Grid.Row>
-        <Grid.Column width={2}>
-          <LeftSideBar />
-        </Grid.Column>
-        <Grid.Column width={13}>
+        <Grid.Column width={16}>
           {children}
         </Grid.Column>
-        <Grid.Column width={1} />
       </Grid.Row>
     </ContentGrid>
     <Footer />
