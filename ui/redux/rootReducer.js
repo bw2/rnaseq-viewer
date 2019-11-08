@@ -4,6 +4,7 @@ import { SubmissionError } from 'redux-form'
 import { reducers as dashboardReducers } from 'pages/Dashboard/reducers'
 import { HttpRequestHelper } from 'shared/utils/httpRequestHelper'
 import {
+  createObjectsByIdReducer,
   createSingleObjectReducer,
 } from './utils/reducerFactories'
 import modalReducers from './utils/modalReducer'
@@ -15,7 +16,8 @@ import modalReducers from './utils/modalReducer'
 // actions
 export const RECEIVE_DATA = 'RECEIVE_DATA'
 const REQUEST_GENES = 'REQUEST_GENES'
-const UPDATE_IGV_VISIBILITY = 'UPDATE_IGV_VISIBILITY'
+const UPDATE_CONFIG = 'UPDATE_CONFIG'
+const UPDATE_LOCI = 'UPDATE_LOCI'
 
 // action creators
 
@@ -61,12 +63,13 @@ export const loadGenes = (geneIds) => {
   }
 }
 
-export const updateIgvReadsVisibility = updates => ({ type: UPDATE_IGV_VISIBILITY, updates })
+export const updateConfig = updates => ({ type: UPDATE_CONFIG, updates })
 
 
 // root reducer
 const rootReducer = combineReducers(Object.assign({
-  igvReadsVisibility: createSingleObjectReducer(UPDATE_IGV_VISIBILITY),
+  loci: createObjectsByIdReducer(UPDATE_LOCI),
+  data: createSingleObjectReducer(UPDATE_CONFIG),
 }, modalReducers, dashboardReducers))
 
 export default rootReducer

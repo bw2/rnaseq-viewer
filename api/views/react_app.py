@@ -4,11 +4,13 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.template import loader
 from django.http import HttpResponse
 
+import settings
+
 
 def main_app(request, *args, **kwargs):
     """Loads the react single page app."""
 
-    initial_json = {}
+    initial_json = settings.RNASEQ_VIEWER_CONFIG
     return _render_app_html(request, initial_json)
 
 
