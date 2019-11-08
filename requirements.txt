@@ -1,0 +1,28 @@
+# dev dependencies
+mock                             # mock objects for unit tests
+pip                              # make sure the latest version of pip is installed
+psutil                           # library for process and system monitoring
+responses
+#selenium
+
+# deployment dependencies
+gunicorn==19.7.1                 # web server
+PyYAML==5.1                      # yaml parsing
+
+# runtime dependencies
+asciitree                        # used by print_project_tree django command
+Django==1.11.23                  # core server-side framework
+django-debug-toolbar             # https://github.com/jazzband/django-debug-toolbar
+django-debug-toolbar-request-history  # for debugging database queries on async requests.
+django-cors-headers==2.2.0       # allows CORS requests for client-side development
+
+elasticsearch==6.2.0             # elasticsearch client
+elasticsearch-dsl==6.1.0	     # elasticsearch query utilities
+
+ipython                          # used by shell.py
+pandas==0.19.2
+requests==2.20.0                 # simpler way to make http requests
+requests_toolbelt		         # for troubleshooting requests
+redis==2.10.6                    # client lib for the redis in-memory database - used for caching server-side objects
+tqdm                             # convenient way to create progress bar for long-running command-line operations
+whitenoise==3.3.0                # simplified static file handling

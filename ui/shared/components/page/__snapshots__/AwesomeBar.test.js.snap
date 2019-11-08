@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`shallow-render without crashing 1`] = `
+<AwesomeBar__AwesomebarSearch
+  category={true}
+  loading={false}
+  minCharacters={1}
+  onResultSelect={[Function]}
+  onSearchChange={[Function]}
+  placeholder="Search project, family, gene name, etc."
+  results={Object {}}
+  selectFirstResult={true}
+  value=""
+/>
+`;
