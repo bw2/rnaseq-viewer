@@ -2,6 +2,8 @@
 *.iml
 *.sqlite3
 *.log
+*.db
+django_key
 
 ui/node_modules
 ui/jest*

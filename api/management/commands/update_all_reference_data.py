@@ -17,9 +17,6 @@ logger = logging.getLogger(__name__)
 REFERENCE_DATA_SOURCES = OrderedDict([
     ("dbnsfp_gene", DbNSFPReferenceDataHandler),
     ("gene_constraint", GeneConstraintReferenceDataHandler),
-    ("primate_ai", PrimateAIReferenceDataHandler),
-    ("mgi", MGIReferenceDataHandler),
-    ("hpo", None),
 ])
 
 

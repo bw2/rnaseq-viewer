@@ -8,7 +8,6 @@ import tempfile
 import xlrd
 
 
-from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 
 from settings import API_LOGIN_REQUIRED_URL

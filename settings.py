@@ -1,34 +1,18 @@
-import logging
 import os
 import random
 import string
 import sys
+from pprint import pprint
 
-logger = logging.getLogger(__name__)
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ADMINS = ()
 
-MANAGERS = ADMINS
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'rnaseq_viewer.db',
+    }
+}
 
-# Password validation - https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
-
-# Application definition
 INSTALLED_APPS = [
     'corsheaders',
     'django.contrib.admin',
@@ -56,43 +40,13 @@ CORS_ORIGIN_WHITELIST = (
 )
 CORS_ALLOW_CREDENTIALS = True
 
-# django-debug-toolbar settings
-ENABLE_DJANGO_DEBUG_TOOLBAR = False
-if ENABLE_DJANGO_DEBUG_TOOLBAR:
-    MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE
-    INSTALLED_APPS = ['debug_toolbar'] + INSTALLED_APPS
-    INTERNAL_IPS = ['127.0.0.1']
-    SHOW_COLLAPSED = True
-    DEBUG_TOOLBAR_PANELS = [
-        'ddt_request_history.panels.request_history.RequestHistoryPanel',
-        #'debug_toolbar.panels.versions.VersionsPanel',
-        'debug_toolbar.panels.timer.TimerPanel',
-        'debug_toolbar.panels.settings.SettingsPanel',
-        'debug_toolbar.panels.headers.HeadersPanel',
-        'debug_toolbar.panels.request.RequestPanel',
-        'debug_toolbar.panels.profiling.ProfilingPanel',
-        'debug_toolbar.panels.sql.SQLPanel',
-        #'debug_toolbar.panels.templates.TemplatesPanel',
-        'debug_toolbar.panels.staticfiles.StaticFilesPanel',
-        #'debug_toolbar.panels.cache.CachePanel',
-        #'debug_toolbar.panels.signals.SignalsPanel',
-        'debug_toolbar.panels.logging.LoggingPanel',
-        'debug_toolbar.panels.redirects.RedirectsPanel',
-    ]
-    DEBUG_TOOLBAR_CONFIG = {
-        'RESULTS_CACHE_SIZE': 100,
-    }
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
@@ -104,7 +58,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '%(asctime)s %(levelname)s: %(message)s     (%(name)s.%(funcName)s:%(lineno)d)',
+            'format': '%(asctime)s %(levelname)s: %(message)s  (%(name)s.%(funcName)s:%(lineno)d)',
         },
         'simple': {
             'format': '%(asctime)s %(levelname)s:  %(message)s'
@@ -121,13 +75,6 @@ LOGGING = {
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
         },
-        'file': {
-            'level': 'INFO',
-            'filters': ['require_debug_false'],
-            'class': 'logging.FileHandler',
-            'filename': 'django.info.log',
-            'formatter': 'verbose',
-        },
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
@@ -136,17 +83,13 @@ LOGGING = {
     },
     'loggers': {
         '': {
-            'handlers': ['file', 'console'],
+            'handlers': ['console'],
             'level': 'INFO',
             'formatter': 'verbose',
             'propagate': True,
         },
     }
 }
-
-ELASTICSEARCH_SERVICE_HOSTNAME = os.environ.get('ELASTICSEARCH_SERVICE_HOSTNAME', 'localhost')
-ELASTICSEARCH_PORT = os.environ.get('ELASTICSEARCH_SERVICE_PORT', "9200")
-ELASTICSEARCH_SERVER = "%s:%s" % (ELASTICSEARCH_SERVICE_HOSTNAME, ELASTICSEARCH_PORT)
 
 DEPLOYMENT_TYPE_DEV = "dev"
 DEPLOYMENT_TYPE_PROD = "prod"
@@ -164,7 +107,7 @@ except IOError:
         with open(SECRET_FILE, 'w') as f:
             f.write(SECRET_KEY)
     except IOError as e:
-        logger.warn('Unable to generate {}: {}'.format(os.path.abspath(SECRET_FILE), e))
+        print('WARNING: Unable to generate {}: {}'.format(os.path.abspath(SECRET_FILE), e))
         SECRET_KEY = os.environ.get("DJANGO_KEY", "-placeholder-key-")
 
 if DEPLOYMENT_TYPE == DEPLOYMENT_TYPE_PROD:
@@ -172,11 +115,6 @@ if DEPLOYMENT_TYPE == DEPLOYMENT_TYPE_PROD:
     CSRF_COOKIE_SECURE = True
 else:
     DEBUG = True
-
-AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
-    'guardian.backends.ObjectPermissionBackend',
-)
 
 BASE_URL = os.environ.get("BASE_URL", "/")
 
@@ -212,7 +150,6 @@ TEMPLATES = [
 
 MEDIA_URL = '/media/'
 
-
 ROOT_URLCONF = 'api.urls'
 
 WSGI_APPLICATION = 'wsgi.application'
@@ -221,11 +158,9 @@ INSTALLED_APPS += [
     'compressor',
 ]
 
-
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 AUTH_PROFILE_MODULE = 'base.UserProfile'
-
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'ui/dist/'),    # this is so django's collectstatic copies ui dist files to STATIC_ROOT
@@ -233,5 +168,45 @@ STATICFILES_DIRS = (
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-
 CSRF_COOKIE_HTTPONLY = True
+
+# django-debug-toolbar settings
+ENABLE_DJANGO_DEBUG_TOOLBAR = True
+if ENABLE_DJANGO_DEBUG_TOOLBAR:
+    MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE
+    INSTALLED_APPS = ['debug_toolbar'] + INSTALLED_APPS
+    INTERNAL_IPS = ['127.0.0.1']
+    SHOW_COLLAPSED = True
+    DEBUG_TOOLBAR_PANELS = [
+        'ddt_request_history.panels.request_history.RequestHistoryPanel',
+        #'debug_toolbar.panels.versions.VersionsPanel',
+        'debug_toolbar.panels.timer.TimerPanel',
+        'debug_toolbar.panels.settings.SettingsPanel',
+        'debug_toolbar.panels.headers.HeadersPanel',
+        'debug_toolbar.panels.request.RequestPanel',
+        'debug_toolbar.panels.profiling.ProfilingPanel',
+        'debug_toolbar.panels.sql.SQLPanel',
+        #'debug_toolbar.panels.templates.TemplatesPanel',
+        'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+        #'debug_toolbar.panels.cache.CachePanel',
+        #'debug_toolbar.panels.signals.SignalsPanel',
+        'debug_toolbar.panels.logging.LoggingPanel',
+        'debug_toolbar.panels.redirects.RedirectsPanel',
+    ]
+    DEBUG_TOOLBAR_CONFIG = {
+        'RESULTS_CACHE_SIZE': 100,
+    }
+
+
+ELASTICSEARCH_SERVICE_HOSTNAME = os.environ.get('ELASTICSEARCH_SERVICE_HOSTNAME', 'localhost')
+ELASTICSEARCH_PORT = os.environ.get('ELASTICSEARCH_SERVICE_PORT', "9200")
+ELASTICSEARCH_SERVER = "%s:%s" % (ELASTICSEARCH_SERVICE_HOSTNAME, ELASTICSEARCH_PORT)
+
+
+import yaml
+CONFIG_FILE_PATH = os.getenv("RNASEQ_VIEWER_CONFIG", "./rnaseq_viewer_config.yml")
+RNASEQ_VIEWER_CONFIG = {}
+if os.path.isfile(CONFIG_FILE_PATH):
+    with open(CONFIG_FILE_PATH, "rt") as yaml_config_file:
+        RNASEQ_VIEWER_CONFIG = yaml.load(yaml_config_file.read(), Loader=yaml.Loader)
+        pprint(RNASEQ_VIEWER_CONFIG)

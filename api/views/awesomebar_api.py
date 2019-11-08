@@ -2,14 +2,12 @@
 
 import logging
 
-from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.views.decorators.http import require_GET
 
 #from seqr.utils.gene_utils import get_queried_genes
-#from seqr.views.utils.json_utils import create_json_response, _to_title_case
 #from seqr.models import Project, Family, Individual, AnalysisGroup, ProjectCategory
-from views.json_utils import create_json_response, _to_title_case
+#from views.utils.json_utils import create_json_response, _to_title_case
 
 logger = logging.getLogger(__name__)
 

@@ -1,0 +1,38 @@
+loci:
+  - chr1
+  - chr2
+
+data:
+  controls:
+    muscle:
+      muscle:
+        label: "All 36 GTEx muscle samples"
+        splice_junctions: out.tab
+        coverage: muscle.bigWig
+
+    fibroblasts:
+      fibroblasts:
+        label: "All 36 GTEx muscle samples"
+        splice_junctions: out.tab
+        coverage: muscle.bigWig
+
+    blood:
+      blood:
+        label: "All 36 GTEx muscle samples"
+        splice_junctions: out.tab
+        coverage: muscle.bigWig
+
+  samples:
+    RGP_94:
+      RGP_94_1:
+        label: "RGP_94_1"
+        splice_junctions: out.tab
+        coverage: muscle.bigWig
+      RGP_94_2:
+        label: "RGP_94_2"
+        splice_junctions: out.tab
+        coverage: muscle.bigWig
+      RGP_94_3:
+        label: "RGP_94_3"
+        splice_junctions: out.tab
+        coverage: muscle.bigWig

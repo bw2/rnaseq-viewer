@@ -1,4 +1,3 @@
-from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 
 #from seqr.views.utils.permissions_utils import get_project_and_check_permissions

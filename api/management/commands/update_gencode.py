@@ -6,8 +6,8 @@ from tqdm import tqdm
 
 from django.core.management.base import BaseCommand, CommandError
 
-from reference_data.management.commands.utils.download_utils import download_file
-from reference_data.models import GeneInfo, TranscriptInfo, GENOME_VERSION_GRCh37, GENOME_VERSION_GRCh38
+from api.management.commands.utils.download_utils import download_file
+from api.models import GeneInfo, TranscriptInfo, GENOME_VERSION_GRCh37, GENOME_VERSION_GRCh38
 
 logger = logging.getLogger(__name__)
 
