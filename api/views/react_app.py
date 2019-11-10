@@ -11,6 +11,7 @@ def main_app(request, *args, **kwargs):
     """Loads the react single page app."""
 
     initial_json = settings.RNASEQ_VIEWER_CONFIG
+
     return _render_app_html(request, initial_json)
 
 

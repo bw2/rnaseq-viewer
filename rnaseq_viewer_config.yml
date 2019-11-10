@@ -5,19 +5,22 @@ loci:
 data:
   controls:
     muscle:
+      order: 1
       label: "Muscle"
       description: "36 samples"
       splice_junctions: out.tab
       coverage: muscle.bigWig
 
-    fibroblasts:
-      label: "Fibroblasts"
+    blood:
+      order: 2
+      label: "Blood"
       description: "36 samples"
       splice_junctions: out.tab
       coverage: muscle.bigWig
 
-    blood:
-      label: "Blood"
+    fibroblasts:
+      order: 3
+      label: "Fibroblasts"
       description: "36 samples"
       splice_junctions: out.tab
       coverage: muscle.bigWig

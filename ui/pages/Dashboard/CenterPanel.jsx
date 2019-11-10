@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { getData } from 'redux/selectors'
 import IGV from 'shared/components/graph/IGV'
 import { SashimiPlot } from 'shared/components/sashimi/SashimiPlot'
 
@@ -147,7 +146,7 @@ class CenterPanel extends React.Component
 }
 
 const mapStateToProps = state => ({
-  data: getData(state),
+  data: state.data,
 })
 
 export { CenterPanel as CenterPanelComponent }
