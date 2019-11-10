@@ -5,6 +5,7 @@ import { HttpRequestHelper } from 'shared/utils/httpRequestHelper'
 import {
   createObjectsByIdReducer,
   createSingleObjectReducer,
+  createSingleValueReducer,
 } from './utils/reducerFactories'
 
 import modalReducers from './utils/modalReducer'
@@ -34,13 +35,12 @@ export const updateEntity = (values, receiveDataAction, urlPath, idField, action
   }
 }
 
-
 // root reducer
 const rootReducer = combineReducers(Object.assign({
   currentLocus: createSingleObjectReducer('UPDATE_CURRENT_LOCUS'),
   loci: createObjectsByIdReducer('UPDATE_LOCI'),
   data: createSingleObjectReducer('UPDATE_CONFIG'),
-  selectedSamples: createObjectsByIdReducer('UPDATE_SELECTED_SAMPLES'),
+  selectedSamples: createSingleValueReducer('UPDATE_SELECTED_SAMPLES', []),
 }, modalReducers))
 
 export default rootReducer

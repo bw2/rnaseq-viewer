@@ -9,8 +9,8 @@ class LeftSideBar extends React.Component
 {
   static propTypes = {
     data: PropTypes.object,
-    selectedSamples: PropTypes.object,
-    onCheckboxChange: PropTypes.func,
+    selectedSamples: PropTypes.array,
+    updateSelectedSamples: PropTypes.func,
   }
 
   render() {
@@ -27,7 +27,15 @@ class LeftSideBar extends React.Component
                 sortBy(Object.values(samples), ['order', 'label']).map(
                   sample =>
                     <div key={sample.label}>
-                      <Checkbox label={sample.label} checked={(this.props.selectedSamples[sample.label] || {}).checked} onChange={this.props.onCheckboxChange} />
+                      <Checkbox
+                        label={sample.label}
+                        checked={this.props.selectedSamples.includes(sample.label)}
+                        onChange={(e, data) =>
+                          this.props.updateSelectedSamples(
+                            data.checked ? [...this.props.selectedSamples, data.label] : this.props.selectedSamples.filter(x => x !== data.label),
+                          )
+                        }
+                      />
                     </div>,
                 )
               }
@@ -44,13 +52,12 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  onCheckboxChange: (e, data) => {
+  updateSelectedSamples: (selectedSamples) => {
     dispatch({
       type: 'UPDATE_SELECTED_SAMPLES',
-      updatesById: { [data.label]: { checked: data.checked || false } },
+      newValue: selectedSamples,
     })
   },
-
 })
 
 

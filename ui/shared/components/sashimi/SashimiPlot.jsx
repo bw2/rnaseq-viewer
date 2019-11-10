@@ -16,7 +16,10 @@ export const SashimiPlot = ({
   coverageColor,
   coverageData,
   junctionData,
+  info,
 }) => {
+
+  console.log(info)
 
   const x0Pixel = 60
   const y0Pixel = height - 30
@@ -158,10 +161,11 @@ export const SashimiPlot = ({
 SashimiPlot.propTypes = {
   title: PropTypes.string.isRequired,
   height: PropTypes.number.isRequired,
-  width: PropTypes.number, // eslint-disable-line
+  width: PropTypes.number.isRequired, // eslint-disable-line
   coverageColor: PropTypes.string,
   coverageData: PropTypes.array.isRequired,
   junctionData: PropTypes.array.isRequired,
+  info: PropTypes.object,
 }
 
 SashimiPlot.defaultProps = {

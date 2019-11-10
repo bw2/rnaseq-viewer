@@ -10,7 +10,7 @@ const env = process.env.NODE_ENV || 'development'
 console.log('ENV: ', env)
 
 const PERSISTING_STATE = [
-  'currentLocus', 'selectedSamples'
+  'currentLocus', 'selectedSamples',
 ]
 
 const persistStoreMiddleware = store => next => (action) => {
@@ -23,9 +23,9 @@ const persistStoreMiddleware = store => next => (action) => {
     .reduce((obj, key) => {
       return {
         ...obj,
-        [key]: nextState[key]
-      };
-    }, {});
+        [key]: nextState[key],
+      }
+    }, {})
 
   window.location.hash = `#${jsurl.stringify(stateToSave)}`
 
@@ -52,7 +52,7 @@ export const configureStore = (
   PERSISTING_STATE.forEach((key) => { initialState[key] = loadState(key) })
 
   //values from url override values from local storage
-  initialState = {...initialState, ...jsurl.parse(window.location.hash.replace(/^#/, ''))}
+  initialState = { ...initialState, ...jsurl.parse(window.location.hash.replace(/^#/, '')) }
 
   console.log('Creating store with initial state:')
   console.log(initialState)

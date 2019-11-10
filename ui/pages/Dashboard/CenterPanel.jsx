@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import IGV from 'shared/components/graph/IGV'
 import { SashimiPlot } from 'shared/components/sashimi/SashimiPlot'
+import { sortBy } from 'lodash'
 
 
 const coverageString = `chr1    14810   14812   90
@@ -72,6 +73,7 @@ class CenterPanel extends React.Component
 {
   static propTypes = {
     data: PropTypes.object,
+    selectedSamples: PropTypes.array,
   }
 
   render() {
@@ -130,14 +132,29 @@ class CenterPanel extends React.Component
 
     return (
       <div>
-        <SashimiPlot
-          title="Sashimi Track"
-          width={1200}
-          height={300}
-          coverageColor="#001DAF"
-          coverageData={coverageData}
-          junctionData={junctionData}
-        />
+        {
+          Object.entries(this.props.data).map(
+            ([categoryName, samples]) =>
+              <div key={categoryName}>
+                <br />
+                <h3> {categoryName.toUpperCase()} </h3>
+                {
+                  sortBy(Object.values(samples).filter(s => this.props.selectedSamples.includes(s.label)), ['order', 'label']).map(
+                    sample =>
+                      <SashimiPlot
+                        title={sample.label}
+                        width={1200}
+                        height={300}
+                        coverageColor="#001DAF"
+                        coverageData={coverageData}
+                        junctionData={junctionData}
+                        info={sample}
+                      />,
+                  )
+                }
+              </div>,
+          )
+        }
         <IGV igvOptions={igvOptions} />
       </div>
     )
@@ -147,6 +164,7 @@ class CenterPanel extends React.Component
 
 const mapStateToProps = state => ({
   data: state.data,
+  selectedSamples: state.selectedSamples,
 })
 
 export { CenterPanel as CenterPanelComponent }
