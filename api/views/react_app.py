@@ -3,14 +3,16 @@ import re
 from django.core.serializers.json import DjangoJSONEncoder
 from django.template import loader
 from django.http import HttpResponse
-
 import settings
+import subprocess
 
 
 def main_app(request, *args, **kwargs):
     """Loads the react single page app."""
 
     initial_json = settings.RNASEQ_VIEWER_CONFIG
+
+    initial_json["googleOauthToken"] = subprocess.check_output("gcloud auth application-default print-access-token", shell=True)
 
     return _render_app_html(request, initial_json)
 

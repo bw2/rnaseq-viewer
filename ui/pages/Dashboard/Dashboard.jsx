@@ -3,6 +3,7 @@ import { Grid } from 'semantic-ui-react'
 import DocumentTitle from 'react-document-title'
 import LeftSideBar from './LeftSideBar'
 import CenterPanel from './CenterPanel'
+import IGVPanel from './IGVPanel'
 
 export default () => (
   <div>
@@ -13,6 +14,7 @@ export default () => (
           <LeftSideBar />
         </Grid.Column>
         <Grid.Column width={13}>
+          <IGVPanel />
           <CenterPanel />
         </Grid.Column>
       </Grid.Row>

@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import IGV from 'shared/components/graph/IGV'
 import { SashimiPlot } from 'shared/components/sashimi/SashimiPlot'
 import { sortBy } from 'lodash'
 
@@ -72,98 +71,39 @@ const junctionData = junctionString.split('\n').map((row) => {
 class CenterPanel extends React.Component
 {
   static propTypes = {
-    data: PropTypes.object,
+    samplesInfo: PropTypes.object,
     selectedSamples: PropTypes.array,
   }
 
-  render() {
-    console.log(this.props.data)
-
-    const url = '/api/project/' //${sample.projectGuid}/igv_track/${encodeURIComponent(sample.datasetFilePath)}`
-
-    const igvTracks = [{
-      url,
-      name: 'track1',
-      alignmentShading: 'strand',
-      type: 'alignment',
-      showSoftClips: true,
-      //...trackOptions,
-    }]
-
-    /*
-    let trackOptions = BAM_TRACK_OPTIONS
-    if (sample.datasetFilePath.endsWith('.cram')) {
-      if (sample.datasetFilePath.startsWith('gs://')) {
-        trackOptions = {
-          format: 'cram',
-          indexURL: `${url}.crai`,
-        }
-      } else {
-        trackOptions = CRAM_PROXY_TRACK_OPTIONS
+  render = () =>
+    <div>
+      {
+        Object.entries(this.props.samplesInfo).map(
+          ([categoryName, samples]) =>
+            <div key={categoryName}>
+              {
+                sortBy(Object.values(samples).filter(s => this.props.selectedSamples.includes(s.label)), ['order', 'label']).map(
+                  sample =>
+                    <SashimiPlot
+                      key={sample.label}
+                      title={sample.label}
+                      width={1200}
+                      height={300}
+                      coverageColor="#001DAF"
+                      coverageData={coverageData}
+                      junctionData={junctionData}
+                      info={sample}
+                    />,
+                )
+              }
+            </div>,
+        )
       }
-    }
-    */
-
-    //const trackName = ReactDOMServer.renderToString(
-    //  <span><PedigreeIcon sex={individual.sex} affected={individual.affected} />{individual.displayName}</span>,
-    //)
-
-    const genome = '38' // '37'
-    const locus = 'chr1:10000-11000'
-
-    igvTracks.push({
-      url: `https://storage.googleapis.com/seqr-reference-data/GRCh${genome}/gencode/gencode.v27${genome === '37' && 'lift37'}.annotation.sorted.gtf.gz`,
-      name: `gencode hg${genome}v27`,
-      displayMode: 'SQUISHED',
-    })
-
-    const igvOptions = {
-      locus,
-      tracks: igvTracks,
-      genome: `hg${genome}`,
-      showKaryo: false,
-      showIdeogram: true,
-      showNavigation: true,
-      showRuler: true,
-      showCenterGuide: true,
-      showCursorTrackingGuide: true,
-      showCommandBar: true,
-    }
-
-    return (
-      <div>
-        {
-          Object.entries(this.props.data).map(
-            ([categoryName, samples]) =>
-              <div key={categoryName}>
-                <br />
-                <h3> {categoryName.toUpperCase()} </h3>
-                {
-                  sortBy(Object.values(samples).filter(s => this.props.selectedSamples.includes(s.label)), ['order', 'label']).map(
-                    sample =>
-                      <SashimiPlot
-                        title={sample.label}
-                        width={1200}
-                        height={300}
-                        coverageColor="#001DAF"
-                        coverageData={coverageData}
-                        junctionData={junctionData}
-                        info={sample}
-                      />,
-                  )
-                }
-              </div>,
-          )
-        }
-        <IGV igvOptions={igvOptions} />
-      </div>
-    )
-  }
-
+    </div>
 }
 
 const mapStateToProps = state => ({
-  data: state.data,
+  samplesInfo: state.samplesInfo,
   selectedSamples: state.selectedSamples,
 })
 

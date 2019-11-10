@@ -99,12 +99,13 @@ class IGV extends React.Component {
     this.container = element
   }
 
-  render() {
-    return <IGVContainer><div ref={this.setContainerElement} /></IGVContainer>
-  }
+  render = () => <IGVContainer><div ref={this.setContainerElement} /></IGVContainer>
 
   componentDidMount() {
     if (this.container) {
+      if (this.props.igvOptions.googleOauthToken) {
+        igv.setGoogleOauthToken(this.props.igvOptions.googleOauthToken)
+      }
       igv.createBrowser(this.container, this.props.igvOptions).then((browser) => {
         this.browser = browser
       })
@@ -117,7 +118,9 @@ class IGV extends React.Component {
       this.props.igvOptions.tracks.forEach((track) => {
         this.browser.loadTrack(track)
       })
-
+    }
+    if (this.browser && prevProps.igvOptions.locus !== this.props.igvOptions.locus) {
+      this.browser.search(this.props.igvOptions.locus)
     }
   }
 }

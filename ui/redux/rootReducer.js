@@ -3,9 +3,9 @@ import { SubmissionError } from 'redux-form'
 
 import { HttpRequestHelper } from 'shared/utils/httpRequestHelper'
 import {
-  createObjectsByIdReducer,
-  createSingleObjectReducer,
+  zeroActionsReducer,
   createSingleValueReducer,
+  createObjectsByIdReducer,
 } from './utils/reducerFactories'
 
 import modalReducers from './utils/modalReducer'
@@ -37,10 +37,12 @@ export const updateEntity = (values, receiveDataAction, urlPath, idField, action
 
 // root reducer
 const rootReducer = combineReducers(Object.assign({
-  currentLocus: createSingleObjectReducer('UPDATE_CURRENT_LOCUS'),
+  referenceGenome: zeroActionsReducer,
+  currentLocus: createSingleValueReducer('UPDATE_CURRENT_LOCUS', ''),
   loci: createObjectsByIdReducer('UPDATE_LOCI'),
-  data: createSingleObjectReducer('UPDATE_CONFIG'),
+  samplesInfo: zeroActionsReducer,
   selectedSamples: createSingleValueReducer('UPDATE_SELECTED_SAMPLES', []),
+  googleOauthToken: zeroActionsReducer,
 }, modalReducers))
 
 export default rootReducer
