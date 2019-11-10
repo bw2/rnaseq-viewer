@@ -77,6 +77,7 @@ class CenterPanel extends React.Component
 
   render() {
     console.log(this.props.data)
+
     const url = '/api/project/' //${sample.projectGuid}/igv_track/${encodeURIComponent(sample.datasetFilePath)}`
 
     const igvTracks = [{
@@ -132,18 +133,17 @@ class CenterPanel extends React.Component
       <div>
         <SashimiPlot
           title="Sashimi Track"
-          width={1000}
-          height={200}
-          coverageColor="#004D7F"
+          width={1200}
+          height={300}
+          coverageColor="#001DAF"
           coverageData={coverageData}
           junctionData={junctionData}
         />
+        <IGV igvOptions={igvOptions} />
       </div>
     )
   }
-  /*
-  <IGV igvOptions={igvOptions} />
-   */
+
 }
 
 const mapStateToProps = state => ({

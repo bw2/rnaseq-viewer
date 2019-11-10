@@ -4,15 +4,6 @@ import { Checkbox } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 import { getData } from 'redux/selectors'
 
-//import styled from 'styled-components'
-//import { Link } from 'react-router-dom'
-
-/*
-const HeaderMenu = styled(Menu)`
-  padding-left: 100px;
-  padding-right: 100px;
-`
- */
 
 class LeftSideBar extends React.Component
 {
@@ -21,8 +12,6 @@ class LeftSideBar extends React.Component
   }
 
   render() {
-    console.log('---------')
-    console.log(this.props.data)
     return (
       <ul>{
         Object.entries(this.props.data).map(
