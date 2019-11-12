@@ -24,22 +24,34 @@ class IGVPanel extends React.Component
     const igvTracks = []
 
     this.props.selectedSamplesList.forEach((sample) => {
-      console.log(sample)
-      if (sample.bam) {
-        //docs @ https://github.com/igvteam/igv.js/wiki/Alignment-Track
-        console.log(`Adding ${sample.bam} track`)
+
+      if (sample.coverage_bigWig && sample.spliceJunctions_bed) {
+        //docs @ https://github.com/igvteam/igv.js/wiki/Wig-Track
+        console.log(`Adding ${sample.coverage_bigWig} and ${sample.spliceJunctions_bed} track`)
 
         igvTracks.push({
-          type: 'alignment',
-          url: sample.bam,
-          oauthToken: IGVPanel.getOauthTokenFn,
+          type: 'merged',
           name: sample.label,
-          alignmentShading: 'strand',
-          showSoftClips: true,
-          //...trackOptions,
+          //height: 100,
+          tracks: [
+            {
+              type: 'wig',
+              format: 'bigwig',
+              url: sample.coverage_bigWig,
+              oauthToken: IGVPanel.getOauthTokenFn,
+            },
+            {
+              type: 'spliceJunc',
+              format: 'bed',
+              url: sample.spliceJunctions_bed,
+              indexURL: `${sample.spliceJunctions_bed}.tbi`,
+              displayMode: 'EXPANDED',
+              oauthToken: IGVPanel.getOauthTokenFn,
+            },
+          ],
         })
       }
-
+      /*
       if (sample.vcf) {
         //docs @ https://github.com/igvteam/igv.js/wiki/Alignment-Track
         console.log(`Adding ${sample.vcf} track`)
@@ -54,30 +66,19 @@ class IGVPanel extends React.Component
           displayMode: 'SQUISHED',
         })
       }
-
-      if (sample.coverage_bigWig && sample.spliceJunctions_bed) {
-        //docs @ https://github.com/igvteam/igv.js/wiki/Wig-Track
-        console.log(`Adding ${sample.coverage_bigWig} and ${sample.spliceJunctions_bed} track`)
+      */
+      if (sample.bam) {
+        //docs @ https://github.com/igvteam/igv.js/wiki/Alignment-Track
+        console.log(`Adding ${sample.bam} track`)
 
         igvTracks.push({
-          type: 'merged',
+          type: 'alignment',
+          url: sample.bam,
+          oauthToken: IGVPanel.getOauthTokenFn,
           name: sample.label,
-          tracks: [
-            {
-              type: 'wig',
-              format: 'bigwig',
-              url: sample.coverage_bigWig,
-              oauthToken: IGVPanel.getOauthTokenFn,
-            },
-            {
-              type: 'spliceJunc',
-              format: 'bed',
-              url: sample.spliceJunctions_bed,
-              indexURL: `${sample.spliceJunctions_bed}.tbi`,
-              displayMode: 'COLLAPSED',
-              oauthToken: IGVPanel.getOauthTokenFn,
-            },
-          ],
+          alignmentShading: 'strand',
+          showSoftClips: true,
+          //...trackOptions,
         })
       }
     })
