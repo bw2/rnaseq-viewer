@@ -12,7 +12,7 @@ def main_app(request, *args, **kwargs):
 
     initial_json = settings.RNASEQ_VIEWER_CONFIG
 
-    initial_json["googleOauthToken"] = subprocess.check_output("gcloud auth application-default print-access-token", shell=True)
+    #initial_json["googleOauthToken"] = subprocess.check_output("gcloud auth application-default print-access-token", shell=True)
 
     return _render_app_html(request, initial_json)
 

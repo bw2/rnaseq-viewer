@@ -23,7 +23,7 @@ def get_google_auth_token(request):
 
     auth_token = subprocess.check_output("gcloud auth application-default print-access-token", shell=True)
 
-    print("|" + auth_token.strip() + "|")
+    #print("|" + auth_token.strip() + "|")
     return create_json_response({
         "auth_token": auth_token.strip(),
     })
