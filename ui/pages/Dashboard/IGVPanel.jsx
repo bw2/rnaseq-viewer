@@ -23,7 +23,8 @@ class IGVPanel extends React.Component
 
     const igvTracks = []
 
-    Object.entries(this.props.selectedSamplesList).forEach((sample) => {
+    this.props.selectedSamplesList.forEach((sample) => {
+      console.log(sample)
       if (sample.bam) {
         //docs @ https://github.com/igvteam/igv.js/wiki/Alignment-Track
         console.log(`Adding ${sample.bam} track`)
@@ -80,6 +81,8 @@ class IGVPanel extends React.Component
         })
       }
     })
+
+    console.log('igvTracks', igvTracks)
 
     const igvOptions = {
       locus: this.props.currentLocus,
