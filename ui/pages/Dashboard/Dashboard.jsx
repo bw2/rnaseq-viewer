@@ -2,7 +2,6 @@ import React from 'react'
 import { Grid } from 'semantic-ui-react'
 import DocumentTitle from 'react-document-title'
 import LeftSideBar from './LeftSideBar'
-import CenterPanel from './CenterPanel'
 import IGVPanel from './IGVPanel'
 
 export default () => (

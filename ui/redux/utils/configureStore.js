@@ -10,7 +10,7 @@ const env = process.env.NODE_ENV || 'development'
 console.log('ENV: ', env)
 
 const PERSISTING_STATE = [
-  'currentLocus', 'selectedSamples',
+  'currentLocus', 'selectedSampleIds',
 ]
 
 const persistStoreMiddleware = store => next => (action) => {

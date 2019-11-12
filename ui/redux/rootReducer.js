@@ -38,11 +38,10 @@ export const updateEntity = (values, receiveDataAction, urlPath, idField, action
 // root reducer
 const rootReducer = combineReducers(Object.assign({
   referenceGenome: zeroActionsReducer,
-  currentLocus: createSingleValueReducer('UPDATE_CURRENT_LOCUS', ''),
   loci: createObjectsByIdReducer('UPDATE_LOCI'),
+  currentLocus: createSingleValueReducer('UPDATE_CURRENT_LOCUS', ''),
   samplesInfo: zeroActionsReducer,
-  selectedSamples: createSingleValueReducer('UPDATE_SELECTED_SAMPLES', []),
-  googleOauthToken: zeroActionsReducer,
+  selectedSampleIds: createSingleValueReducer('UPDATE_SELECTED_SAMPLES', []),
 }, modalReducers))
 
 export default rootReducer

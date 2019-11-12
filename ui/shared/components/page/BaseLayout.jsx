@@ -9,7 +9,6 @@ import styled from 'styled-components'
 import { Grid } from 'semantic-ui-react'
 
 import Header from './Header'
-import Footer from './Footer'
 
 
 const LayoutContainer = styled.div`
@@ -32,7 +31,6 @@ const BaseLayout = ({ children }) =>
         </Grid.Column>
       </Grid.Row>
     </ContentGrid>
-    <Footer />
   </LayoutContainer>
 
 export { BaseLayout as BaseLayoutComponent }
