@@ -14,6 +14,8 @@ from api.views.awesomebar_api import awesomebar_autocomplete_handler
 from api.views.igv_api import fetch_igv_track
 
 # core react page templates
+from views.auth_api import get_google_auth_token
+
 react_app_pages = [
     '',
 ]
@@ -21,6 +23,7 @@ react_app_pages = [
 # NOTE: the actual url will be this with an '/api' prefix
 api_endpoints = {
     'awesomebar': awesomebar_autocomplete_handler,
+    'google_auth_token': get_google_auth_token,
 }
 
 urlpatterns = []
