@@ -44,7 +44,10 @@ class LeftSideBar extends React.Component
             ([categoryName, samples]) =>
               <div key={categoryName}>
                 <br />
-                <h3> {categoryName.toUpperCase()} </h3>
+                <div>
+                  <h3 style={{ display: 'inline-block' }}> {categoryName.toUpperCase()} </h3>
+                  <div style={{ display: 'inline-block', margin: '0px 0px 0px 8px', color: 'gray', whiteSpace: 'nowrap' }}>(N={samples.length})</div>
+                </div>
                 {
                   samples.map(sample =>
                     <div key={sample.label}>
@@ -57,6 +60,9 @@ class LeftSideBar extends React.Component
                           )
                         }
                       />
+                      {
+                        sample.description && <div style={{ margin: '0px 0px 10px 25px', color: 'gray', whiteSpace: 'nowrap' }}>({sample.description})</div>
+                      }
                     </div>,
                   )
                 }
