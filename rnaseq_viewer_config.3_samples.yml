@@ -1,0 +1,48 @@
+referenceGenome: "38"
+
+currentLocus: "chr1:50000-51000"
+
+loci:
+  - chr1
+  - chr2
+
+samplesInfo:
+  controls:
+    muscle:
+      order: 1
+      label: "Muscle"
+      description: "100 samples"
+      spliceJunctions_bed: gs://macarthurlab-rnaseq/GTEx_ref_data/muscle_100_GTEx_samples.SJ.out.tab.bed.gz
+      coverage_bigWig: gs://macarthurlab-rnaseq/GTEx_ref_data/muscle_100_GTEx_samples.bigWig
+
+    blood:
+      order: 2
+      label: "Blood"
+      description: "100 samples"
+      spliceJunctions_bed: gs://macarthurlab-rnaseq/GTEx_ref_data/blood_100_GTEx_samples.SJ.out.tab.bed.gz
+      coverage_bigWig: gs://macarthurlab-rnaseq/GTEx_ref_data/blood_100_GTEx_samples.bigWig
+
+    fibroblasts:
+      order: 3
+      label: "Fibroblasts"
+      description: "100 samples"
+      spliceJunctions_bed: gs://macarthurlab-rnaseq/GTEx_ref_data/fibs_100_GTEx_samples.SJ.out.tab.bed.gz
+      coverage_bigWig: gs://macarthurlab-rnaseq/GTEx_ref_data/fibs_100_GTEx_samples.bigWig
+
+  cases:
+
+    RGP_94_2:
+      spliceJunctions_bed: gs://macarthurlab-rnaseq/SJ_out_bed_for_igvjs/RGP_94_3_2.SJ.out.bed.gz
+      coverage_bigWig: gs://macarthurlab-rnaseq/bigWig/RGP_94_3_2.bigWig
+      vcf: gs://macarthurlab-rnaseq/grch38_vcfs/RGP_94_3_2.SNPs.vcf.gz
+      bam: gs://macarthurlab-rnaseq/star/RGP_94_3_2.Aligned.sortedByCoord.out.bam
+
+    RGP_94_3:
+      spliceJunctions_bed: gs://macarthurlab-rnaseq/SJ_out_bed_for_igvjs/RGP_94_4_2.SJ.out.bed.gz
+      coverage_bigWig: gs://macarthurlab-rnaseq/bigWig/RGP_94_4_2.bigWig
+      bam: gs://macarthurlab-rnaseq/star/RGP_94_4_2.Aligned.sortedByCoord.out.bam
+
+    VIL_17_120:
+      spliceJunctions_bed: gs://macarthurlab-rnaseq/SJ_out_bed_for_igvjs/VIL_17_120.SJ.out.bed.gz
+      coverage_bigWig: gs://macarthurlab-rnaseq/bigWig/VIL_17_120.bigWig
+      bam: gs://macarthurlab-rnaseq/star/VIL_17_120.Aligned.sortedByCoord.out.bam
