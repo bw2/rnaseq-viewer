@@ -1,4 +1,4 @@
-import { sortBy } from 'lodash'
+import { orderBy } from 'lodash'
 import { createSelector } from 'reselect'
 
 export const getCurrentLocus = state => state.currentLocus
@@ -26,18 +26,21 @@ export const getSelectedSampleIds = state => state.selectedSampleIds
 /* eslint-disable no-unused-vars */
 export const getAllSamplesByCategory = createSelector(
   getSamplesInfo,
-  samplesInfo => Object.entries(samplesInfo).reduce(
+  samplesInfo => orderBy(Object.entries(samplesInfo), [([categoryName, samples]) => categoryName], ['desc']).reduce(
     (acc, [categoryName, samples]) => ({
       ...acc,
       ...{
         [categoryName]:
-          sortBy(Object.entries(samples), [([_, sample]) => sample.order, ([_, sample]) => sample.label]).map(
-            ([sampleId, sample]) => ({
-              ...sample,
-              categoryName,
-              sampleId,
-              label: sample.label || sampleId,
-            })),
+          orderBy(
+            Object.entries(samples).map(
+              ([sampleId, sample]) => ({
+                ...sample,
+                categoryName,
+                sampleId,
+                label: sample.label || sampleId,
+              })),
+            ['order', 'label'],
+          ),
       },
     }), {}),
 )
