@@ -15,7 +15,6 @@ export default () => (
         </Grid.Column>
         <Grid.Column width={13}>
           <IGVPanel />
-          <CenterPanel />
         </Grid.Column>
       </Grid.Row>
     </Grid>

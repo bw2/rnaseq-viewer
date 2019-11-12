@@ -11,37 +11,42 @@ samplesInfo:
     muscle:
       order: 1
       label: "Muscle"
-      description: "36 samples"
-      splice_junctions: out.tab
-      coverage: gs://macarthurlab-rnaseq/bigWig/VCGS_FAM49_153_R1.bigWig
+      description: "100 GTEx skeletal muscle samples"
+      spliceJunctions_bed: gs://macarthurlab-rnaseq/GTEx_ref_data/muscle_100_GTEx_samples.SJ.out.tab.bed.gz
+      coverage_bigWig: gs://macarthurlab-rnaseq/GTEx_ref_data/muscle_100_GTEx_samples.bigWig
 
     blood:
       order: 2
       label: "Blood"
-      description: "36 samples"
-      splice_junctions: out.tab
-      coverage: gs://macarthurlab-rnaseq/bigWig/VCGS_FAM4_13_2.bigWig
+      description: "100 GTEx whole blood samples"
+      spliceJunctions_bed: gs://macarthurlab-rnaseq/GTEx_ref_data/blood_100_GTEx_samples.SJ.out.tab.bed.gz
+      coverage_bigWig: gs://macarthurlab-rnaseq/GTEx_ref_data/blood_100_GTEx_samples.bigWig
 
     fibroblasts:
       order: 3
       label: "Fibroblasts"
-      description: "36 samples"
-      splice_junctions: out.tab
-      coverage: gs://macarthurlab-rnaseq/bigWig/VCGS_FAM52_162_3.bigWig
+      description: "100 GTEx cultured fibroblast samples"
+      spliceJunctions_bed: gs://macarthurlab-rnaseq/GTEx_ref_data/fibs_100_GTEx_samples.SJ.out.tab.bed.gz
+      coverage_bigWig: gs://macarthurlab-rnaseq/GTEx_ref_data/fibs_100_GTEx_samples.bigWig
 
   samples:
     RGP_94_1:
       label: "RGP_94_1"
-      splice_junctions: out.tab
-      coverage: gs://macarthurlab-rnaseq/bigWig/VCGS_FAM58_181_R1.bigWig
-      bam: gs://
+      spliceJunctions_bed: out.tab
+      coverage_bigWig: gs://macarthurlab-rnaseq/bigWig/VCGS_FAM58_181_R1.bigWig
+      vcf: gs://
+      bam:
+
     RGP_94_2:
       label: "RGP_94_2"
-      splice_junctions: out.tab
-      coverage: gs://macarthurlab-rnaseq/bigWig/VCGS_FAM150_468_2.bigWig
-      vcf: bla.vcf
+      spliceJunctions_bed: out.tab
+      coverage_bigWig: gs://macarthurlab-rnaseq/bigWig/VCGS_FAM58_181_R1.bigWig
+      vcf: gs://
+      bam:
+
     RGP_94_3:
       label: "RGP_94_3"
-      splice_junctions: out.tab
-      coverage: gs://macarthurlab-rnaseq/bigWig/VCGS_FAM12_36_2.bigWig
-      vcf: bla.vcf
+      spliceJunctions_bed: out.tab
+      coverage_bigWig: gs://macarthurlab-rnaseq/bigWig/VCGS_FAM58_181_R1.bigWig
+      vcf: gs://
+      bam:

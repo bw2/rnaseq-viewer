@@ -14,6 +14,10 @@ class IGVPanel extends React.Component
     googleOauthToken: PropTypes.string,
   }
 
+  static getOauthTokenFn = () => {
+    return fetch('/api/google_auth_token').then(response => response.json()).then(j => j.auth_token)
+  }
+
   render() {
     if (!this.props.currentLocus) {
       return null
@@ -25,7 +29,7 @@ class IGVPanel extends React.Component
       ([categoryName, samples]) => { //eslint-disable-line no-unused-vars
         sortBy(Object.values(samples), ['order', 'label']).filter(s => this.props.selectedSamples.includes(s.label)).forEach(
           (sample) => {
-            /*
+
             if (sample.bam) {
               //docs @ https://github.com/igvteam/igv.js/wiki/Alignment-Track
               igvTracks.push({
@@ -37,17 +41,41 @@ class IGVPanel extends React.Component
                 //...trackOptions,
               })
             }
-            */
 
-            if (sample.coverage) {
-              //docs @ https://github.com/igvteam/igv.js/wiki/Wig-Track
-              console.log(`Adding ${sample.coverage} track`)
+            if (sample.vcf) {
+              //docs @ https://github.com/igvteam/igv.js/wiki/Alignment-Track
               igvTracks.push({
-                type: 'wig',
-                url: sample.coverage,
+                type: 'variant',
+                format: 'vcf',
+                url: sample.vcf,
+                indexUrl: `${sample.vcf}.tbi`,
                 name: sample.label,
-                color: 'blue',
-                //...trackOptions,
+                displayMode: 'SQUISHED',
+              })
+            }
+
+            if (sample.coverage_bigWig && sample.spliceJunctions_bed) {
+              //docs @ https://github.com/igvteam/igv.js/wiki/Wig-Track
+              console.log(`Adding ${sample.coverage_bigWig} track`)
+              igvTracks.push({
+                type: 'merged',
+                name: sample.label,
+                tracks: [
+                  {
+                    type: 'wig',
+                    format: "bigwig",
+                    url: sample.coverage_bigWig,
+                    oauthToken: IGVPanel.getOauthTokenFn,
+                  },
+                  {
+                    type: 'spliceJunc',
+                    format: 'bed',
+                    url: sample.spliceJunctions_bed,
+                    indexURL: `${sample.spliceJunctions_bed}.tbi`,
+                    displayMode: 'COLLAPSED',
+                    oauthToken: IGVPanel.getOauthTokenFn,
+                  },
+                ],
               })
             }
           })
