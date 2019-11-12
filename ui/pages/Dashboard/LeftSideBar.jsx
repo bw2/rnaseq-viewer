@@ -9,10 +9,11 @@ class LeftSideBar extends React.Component
 {
   static propTypes = {
     currentLocus: PropTypes.string,
-    referenceGenome: PropTypes.string,
+    displaySettings: PropTypes.object,
     samplesByCategory: PropTypes.object,
     selectedSampleIds: PropTypes.array,
     updateCurrentLocus: PropTypes.func,
+    updateDisplaySettings: PropTypes.func,
     updateSelectedSampleIds: PropTypes.func,
   }
 
@@ -22,10 +23,7 @@ class LeftSideBar extends React.Component
     //const params = new URLSearchParams(window.location.search)
     return (
       <ul>
-        <div style={{ display: 'flex' }}>
-          <h3> LOCUS </h3>
-          <div style={{ margin: '0px 0px 10px 30px', color: 'gray', whiteSpace: 'nowrap' }}>(genome: hg{this.props.referenceGenome})</div>
-        </div>
+        <h3> LOCUS </h3>
 
         <Input type="text" placeholder="Gene or region" defaultValue={this.props.currentLocus} onKeyUp={(e) => {
           if (e.keyCode === 13) {
@@ -33,6 +31,14 @@ class LeftSideBar extends React.Component
           }
         }}
         />
+
+        <h3> DISPLAY </h3>
+        <Checkbox
+          label="show BAMs"
+          checked={this.props.displaySettings.showBams}
+          onChange={(e, data) => this.props.updateDisplaySettings({ showBams: data.checked })}
+        />
+
         {
           Object.entries(this.props.samplesByCategory).map(
             ([categoryName, samples]) =>
@@ -63,7 +69,7 @@ class LeftSideBar extends React.Component
 
 const mapStateToProps = state => ({
   currentLocus: state.currentLocus,
-  referenceGenome: state.referenceGenome,
+  displaySettings: state.displaySettings,
   selectedSampleIds: getSelectedSampleIds(state),
   samplesByCategory: getAllSamplesByCategory(state),
 })
@@ -79,6 +85,12 @@ const mapDispatchToProps = dispatch => ({
     dispatch({
       type: 'UPDATE_SELECTED_SAMPLES',
       newValue: selectedSampleIds,
+    })
+  },
+  updateDisplaySettings: (newSettings) => {
+    dispatch({
+      type: 'UPDATE_DISPLAY_SETTINGS',
+      updates: newSettings,
     })
   },
 })

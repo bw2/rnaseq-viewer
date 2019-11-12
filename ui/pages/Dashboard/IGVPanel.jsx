@@ -9,6 +9,7 @@ class IGVPanel extends React.Component
   static propTypes = {
     referenceGenome: PropTypes.string,
     currentLocus: PropTypes.string,
+    displaySettings: PropTypes.object,
     selectedSamplesList: PropTypes.array,
   }
 
@@ -17,10 +18,6 @@ class IGVPanel extends React.Component
   }
 
   render() {
-    if (!this.props.currentLocus) {
-      return null
-    }
-
     const igvTracks = []
 
     this.props.selectedSamplesList.forEach((sample) => {
@@ -32,7 +29,7 @@ class IGVPanel extends React.Component
         igvTracks.push({
           type: 'merged',
           name: sample.label,
-          //height: 100,
+          height: 100,
           tracks: [
             {
               type: 'wig',
@@ -67,7 +64,7 @@ class IGVPanel extends React.Component
         })
       }
       */
-      if (sample.bam) {
+      if (this.props.displaySettings.showBams && sample.bam) {
         //docs @ https://github.com/igvteam/igv.js/wiki/Alignment-Track
         console.log(`Adding ${sample.bam} track`)
 
@@ -86,7 +83,7 @@ class IGVPanel extends React.Component
     console.log('igvTracks', igvTracks)
 
     const igvOptions = {
-      locus: this.props.currentLocus,
+      locus: this.props.currentLocus || 'ACTA1',
       tracks: igvTracks,
       genome: `hg${this.props.referenceGenome}`,
       showKaryo: false,
@@ -106,6 +103,7 @@ class IGVPanel extends React.Component
 const mapStateToProps = state => ({
   referenceGenome: state.referenceGenome,
   currentLocus: state.currentLocus,
+  displaySettings: state.displaySettings,
   selectedSamplesList: getSelectedSamplesList(state),
 })
 
