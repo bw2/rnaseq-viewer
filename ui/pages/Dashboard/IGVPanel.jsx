@@ -38,7 +38,7 @@ class IGVPanel extends React.Component
               oauthToken: IGVPanel.getOauthTokenFn,
             },
             {
-              type: 'spliceJunc',
+              type: 'junctions',
               format: 'bed',
               url: sample.spliceJunctions_bed,
               indexURL: `${sample.spliceJunctions_bed}.tbi`,
