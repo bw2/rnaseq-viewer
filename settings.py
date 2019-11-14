@@ -37,8 +37,11 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_WHITELIST = (
     'localhost:3000',
+    '127.0.0.1:3000',
     'localhost:8000',
+    '127.0.0.1:8000',
     'localhost:8080',
+    '127.0.0.1:8080',
 )
 CORS_ALLOW_CREDENTIALS = True
 
@@ -206,7 +209,7 @@ ELASTICSEARCH_SERVER = "%s:%s" % (ELASTICSEARCH_SERVICE_HOSTNAME, ELASTICSEARCH_
 
 
 import yaml
-CONFIG_FILE_PATH = os.getenv("RNASEQ_VIEWER_CONFIG", "./rnaseq_viewer_config.yml")
+CONFIG_FILE_PATH = os.getenv("CONFIG", "./rnaseq_viewer_config.yml")
 RNASEQ_VIEWER_CONFIG = {}
 if os.path.isfile(CONFIG_FILE_PATH):
     with open(CONFIG_FILE_PATH, "rt") as yaml_config_file:
