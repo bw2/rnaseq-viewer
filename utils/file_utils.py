@@ -1,11 +1,9 @@
 import logging
 import os
 
-from seqr.utils.gcloud.google_bucket_file_utils import is_google_bucket_file_path, \
-    does_google_bucket_file_exist, google_bucket_file_iter, get_google_bucket_file_stats, \
-    copy_google_bucket_file
-from seqr.utils.local.local_file_utils import is_local_file_path, get_local_file_stats, \
-    copy_local_file
+from utils.gcloud.google_bucket_file_utils import is_google_bucket_file_path, does_google_bucket_file_exist, \
+    google_bucket_file_iter, get_google_bucket_file_stats, copy_google_bucket_file
+from utils.local.local_file_utils import is_local_file_path, get_local_file_stats, copy_local_file
 
 logger = logging.getLogger(__name__)
 

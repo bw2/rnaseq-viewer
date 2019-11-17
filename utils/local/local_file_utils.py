@@ -1,7 +1,7 @@
 import os
 
-from seqr.utils.other_utils import FileStats
-from seqr.utils.shell_utils import run
+from utils.other_utils import FileStats
+from utils.shell_utils import run
 
 
 def is_local_file_path(file_path):

@@ -3,8 +3,8 @@ import re
 import subprocess
 import time
 
-from seqr.utils.other_utils import FileStats
-from seqr.utils.shell_utils import run
+from utils.other_utils import FileStats
+from utils.shell_utils import run
 
 logger = logging.getLogger(__name__)
 
