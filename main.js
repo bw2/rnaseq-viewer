@@ -1,26 +1,72 @@
-document.title = "RNA-seq viewer"
 
-const initGoogleClient = async () => {
-  // use OAuth2 to get an access token for RNA-seq viewer to access the google storage API on behalf of the user
-  await gapi.client.init({
-    'clientId': '61200892608-qphtf65o323setqdcfj4hnf601mmetvs.apps.googleusercontent.com',
-    'scope': 'https://www.googleapis.com/auth/devstorage.read_only',
-    'discoveryDocs': ['https://www.googleapis.com/discovery/v1/apis/storage/v1/rest']
+const initCheckboxes = (parentDiv, sampleInfo) => {
+
+  sampleInfo.forEach( ({label, description, spliceJunctions_bed, coverage_bigWig}) => {
+    let divElem = document.createElement("div")
+    let labelElem = document.createElement("label")
+    let checkboxElem = document.createElement("input")
+    checkboxElem.setAttribute("type", "checkbox")
+    checkboxElem.addEventListener("click", (e) => {
+      if (!e.target.checked) {
+        igv.getBrowser().removeTrackByName(label)
+        return
+      }
+
+      igv.getBrowser().loadTrack({
+        type: 'merged',
+        name: label,
+        height: 100,
+        tracks: [
+          {
+            type: 'wig',
+            format: "bigwig",
+            url: coverage_bigWig,
+            //oauthToken: token,
+          },
+          {
+            type: 'junctions',
+            format: 'bed',
+            url: spliceJunctions_bed,
+            indexURL: `${spliceJunctions_bed}.tbi`,
+            displayMode: 'COLLAPSED',
+            //oauthToken: token,
+          },
+        ],
+      })
+
+    })
+    labelElem.appendChild(checkboxElem)
+    labelElem.appendChild(document.createTextNode(label))
+    divElem.appendChild(labelElem)
+    parentDiv.appendChild(divElem)
+
+    if (description) {
+      labelElem.insertAdjacentHTML('afterend', `<div style='color: gray; margin: 0px 0px 10px 15px'>${description}</div>`)
+    }
   })
-
-  await gapi.auth2.getAuthInstance().signIn()
-
-  // pass access token to IGV.js
-  const user = gapi.auth2.getAuthInstance().currentUser.get()
-  igv.oauth.google.setToken(user.getAuthResponse().access_token)
-
-  createIGV()
 }
 
-const createIGV = () => {
-  let tracks = []
+const initApp = async () => {
 
-  tracks = [ 'sampleA', 'sampleB', '2sample', ].map((prefix) => {
+  const controlsDiv = document.getElementById('controls')
+  const samplesDiv = document.getElementById('samples')
+  initCheckboxes(controlsDiv, CONTROLS)
+  initCheckboxes(samplesDiv, SAMPLES)
+
+  await initGoogleClient()
+  const googleAccessToken = await getGoogleAccessToken()
+
+  igv.oauth.google.setToken(googleAccessToken)
+
+  //init local files input
+  document.getElementById('localFiles').addEventListener('change', handleFileSelect, false)
+
+  //https://cloud.google.com/storage/docs/json_api/v1/
+  //const storage = await listGoogleStorageFiles('gs://macarthurlab-rnaseq/test_data')
+  //if (window.File && window.FileReader && window.FileList)
+  //console.log("#getGoogleStorageFiles", storage)
+
+  const tracks = [ 'sampleA', 'sampleB', '2sample', ].map((prefix) => {
     return {
       type: 'merged',
       name: prefix,
@@ -51,17 +97,25 @@ const createIGV = () => {
     tracks: tracks,
   }
 
-  let igvDiv = document.getElementById("igv-div")
+  // create IGV browser
+  const igvDiv = document.getElementById("igv-div")
+  await igv.createBrowser(igvDiv, options)
 
-  igv.createBrowser(igvDiv, options)
-    .then((browser) => {
-      console.log("Created IGV browser with token", token)
-    })
+
 }
 
-
-const initApp = () => {
-  gapi.load('client:auth2', initGoogleClient)
+const handleFileSelect = (e) => {
+  console.log(e.target.files)
+  for (let x of e.target.files) {
+    console.log(x.type, x.name)
+  }
+  /*
+  igvBrowser.loadTrack({
+    type:
+    format:
+    url:
+  })
+   */
 }
 
 
