@@ -1,7 +1,7 @@
 
 const initCheckboxes = (parentDiv, sampleInfo) => {
 
-  sampleInfo.forEach( ({label, description, spliceJunctions_bed, coverage_bigWig}) => {
+  sampleInfo.forEach(({label, description, spliceJunctions_bed, coverage_bigWig}) => {
     let divElem = document.createElement("div")
     let labelElem = document.createElement("label")
     let checkboxElem = document.createElement("input")
@@ -39,7 +39,6 @@ const initCheckboxes = (parentDiv, sampleInfo) => {
     labelElem.appendChild(document.createTextNode(label))
     divElem.appendChild(labelElem)
     parentDiv.appendChild(divElem)
-
     if (description) {
       labelElem.insertAdjacentHTML('afterend', `<div style='color: gray; margin: 0px 0px 10px 15px'>${description}</div>`)
     }
@@ -59,7 +58,7 @@ const initApp = async () => {
   igv.oauth.google.setToken(googleAccessToken)
 
   //init local files input
-  document.getElementById('localFiles').addEventListener('change', handleFileSelect, false)
+  document.getElementById('local-files').addEventListener('change', handleFileSelect, false)
 
   //https://cloud.google.com/storage/docs/json_api/v1/
   //const storage = await listGoogleStorageFiles('gs://macarthurlab-rnaseq/test_data')
