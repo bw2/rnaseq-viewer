@@ -1,106 +1,92 @@
 
-const initCheckboxes = (parentDiv, sampleInfo) => {
+const loadSpliceJunctionTrack = (name, coverageFilePath, junctionsFilePath) => {
+  console.log('Loading coverageFilePath', coverageFilePath)
+  console.log('Loading junctionsFilePath', junctionsFilePath)
+  igv.getBrowser().loadTrack({
+    type: 'merged',
+    name: name,
+    height: 100,
+    tracks: [
+      {
+        type: 'wig',
+        format: "bigwig",
+        url: coverageFilePath,
+        //oauthToken: token,
+      },
+      {
+        type: 'junctions',
+        format: 'bed',
+        url: junctionsFilePath,
+        indexURL: `${junctionsFilePath}.tbi`,
+        displayMode: 'COLLAPSED',
+        //oauthToken: token,
+      },
+    ],
+  })
+}
 
-  sampleInfo.forEach(({label, description, spliceJunctions_bed, coverage_bigWig}) => {
+const initCheckboxesAndTracks = (parentDiv, sampleInfo) => {
+
+  parentDiv.innerHTML = '';
+
+  sampleInfo.forEach(({name, description, junctions, coverage}) => {
     let divElem = document.createElement("div")
     let labelElem = document.createElement("label")
     let checkboxElem = document.createElement("input")
     checkboxElem.setAttribute("type", "checkbox")
-    checkboxElem.addEventListener("click", (e) => {
-      if (!e.target.checked) {
-        igv.getBrowser().removeTrackByName(label)
-        return
-      }
-
-      igv.getBrowser().loadTrack({
-        type: 'merged',
-        name: label,
-        height: 100,
-        tracks: [
-          {
-            type: 'wig',
-            format: "bigwig",
-            url: coverage_bigWig,
-            //oauthToken: token,
-          },
-          {
-            type: 'junctions',
-            format: 'bed',
-            url: spliceJunctions_bed,
-            indexURL: `${spliceJunctions_bed}.tbi`,
-            displayMode: 'COLLAPSED',
-            //oauthToken: token,
-          },
-        ],
-      })
-
-    })
+    checkboxElem.setAttribute("class", "sample-checkbox")
+    checkboxElem.setAttribute("id", `${name}-checkbox`)
     labelElem.appendChild(checkboxElem)
-    labelElem.appendChild(document.createTextNode(label))
+    labelElem.appendChild(document.createTextNode(name))
     divElem.appendChild(labelElem)
     parentDiv.appendChild(divElem)
     if (description) {
-      labelElem.insertAdjacentHTML('afterend', `<div style='color: gray; margin: 0px 0px 10px 15px'>${description}</div>`)
+      labelElem.insertAdjacentHTML('beforeend', `<div class="tooltip"><span class="help-icon"> ? </span><span class="tooltiptext">${description}</span></div>`)
     }
+
+    if (isTrackShown(name)) {
+      checkboxElem.setAttribute("checked", true)
+      loadSpliceJunctionTrack(name, coverage, junctions)
+    }
+
+    checkboxElem.addEventListener("click", (e) => {
+      const isChecked = e.target.checked
+
+      updateTrack(name, isChecked)
+
+      if (isChecked) {
+        loadSpliceJunctionTrack(name, coverage, junctions)
+      } else {
+        igv.getBrowser().removeTrackByName(name)
+      }
+    })
+
+    document.getElementById("clear-all-samples-button").addEventListener('click', () => {
+      const reference_track_names = REFERENCE_TRACKS.map(t => t.name)
+      getTrackList().filter(trackName => reference_track_names.indexOf(trackName) === -1).forEach(trackName => {
+          igv.getBrowser().removeTrackByName(trackName)
+          //document.getElementById(`${trackName}-checkbox`).checked = false
+          updateTrack(trackName, false)
+      })
+    })
   })
 }
 
-const initApp = async () => {
+const initSignOutButton = async () => {
+  let divElem = document.createElement("div")
+  divElem.insertAdjacentHTML('beforeend', `<p>Signed in as ${await getGoogleUserEmail()}</p>`)
 
-  const controlsDiv = document.getElementById('controls')
-  const samplesDiv = document.getElementById('samples')
-  initCheckboxes(controlsDiv, CONTROLS)
-  initCheckboxes(samplesDiv, SAMPLES)
-
-  await initGoogleClient()
-  const googleAccessToken = await getGoogleAccessToken()
-
-  igv.oauth.google.setToken(googleAccessToken)
-
-  //init local files input
-  document.getElementById('local-files').addEventListener('change', handleFileSelect, false)
-
-  //https://cloud.google.com/storage/docs/json_api/v1/
-  //const storage = await listGoogleStorageFiles('gs://macarthurlab-rnaseq/test_data')
-  //if (window.File && window.FileReader && window.FileList)
-  //console.log("#getGoogleStorageFiles", storage)
-
-  const tracks = [ 'sampleA', 'sampleB', '2sample', ].map((prefix) => {
-    return {
-      type: 'merged',
-      name: prefix,
-      height: 100,
-      tracks: [
-        {
-          type: 'wig',
-          format: "bigwig",
-          url: `gs://macarthurlab-rnaseq/test_data/${prefix}.bigWig`,
-          //oauthToken: token,
-        },
-        {
-          type: 'junctions',
-          format: 'bed',
-          url: `gs://macarthurlab-rnaseq/test_data/${prefix}.SJ.out.tab.bed.gz`,
-          indexURL: `gs://macarthurlab-rnaseq/test_data/${prefix}.SJ.out.tab.bed.gz.tbi`,
-          displayMode: 'COLLAPSED',
-          //oauthToken: token,
-        },
-      ],
-    }
+  let buttonElem = document.createElement("input")
+  buttonElem.setAttribute("type", "button")
+  buttonElem.setAttribute("value", "Sign Out")
+  buttonElem.addEventListener("click", async (e) => {
+    await googleSignOut()
+    await googleSignIn()
   })
 
-  let options = {
-    genome: 'hg38',
-    //locus: 'chr1:3,826,724-3,826,763',
-    locus: 'chr15:92,882,678-92,884,209',
-    tracks: tracks,
-  }
+  divElem.appendChild(buttonElem)
 
-  // create IGV browser
-  const igvDiv = document.getElementById("igv-div")
-  await igv.createBrowser(igvDiv, options)
-
-
+  document.getElementById("left-bar").appendChild(divElem)
 }
 
 const handleFileSelect = (e) => {
@@ -115,6 +101,53 @@ const handleFileSelect = (e) => {
     url:
   })
    */
+}
+
+const initIGV = async () => {
+
+  let options = {
+    genome: 'hg38',
+    locus: GLOBAL_PROPERTIES['locus'],
+    tracks: [],
+  }
+
+  // create IGV browser
+  const igvDiv = document.getElementById("igv-div")
+  const igvBrowser = await igv.createBrowser(igvDiv, options)
+
+  igvBrowser.on('locuschange', ({chr, start, end, label: locus_string}) => {
+    //save the new location
+    updateLocus(locus_string)
+  })
+}
+
+const initApp = async () => {
+
+  initGlobalProperties()
+
+  await initGoogleClient()
+
+  await googleSignIn()
+
+  igv.oauth.google.setToken(getGoogleAccessToken)
+
+  await initIGV()
+
+  initCheckboxesAndTracks(document.getElementById('reference-tracks'), REFERENCE_TRACKS)
+  initCheckboxesAndTracks(document.getElementById('samples'), SAMPLE_TRACKS)
+
+  await initSignOutButton()
+
+
+  //init local files input
+  //document.getElementById('local-files').addEventListener('change', handleFileSelect, false)
+
+
+  //https://cloud.google.com/storage/docs/json_api/v1/
+  //const storage = await listGoogleStorageFiles('gs://macarthurlab-rnaseq/test_data')
+  //if (window.File && window.FileReader && window.FileList)
+  //console.log("#getGoogleStorageFiles", storage)
+
 }
 
 
