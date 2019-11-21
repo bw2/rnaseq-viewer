@@ -1,3 +1,6 @@
+/**
+ * Utilities for keeping GLOBAL_PROPERTIES in sync with localStore and the url hash.
+ */
 
 let GLOBAL_PROPERTIES = {
   'locus': 'chr15:92,882,678-92,884,209',
@@ -62,7 +65,6 @@ const getTrackList = () => {
 }
 
 const isTrackShown = (name) => {
-  console.log('isTrackShown', name, getTrackList().indexOf(name) !== -1)
   return getTrackList().indexOf(name) !== -1
 }
 
