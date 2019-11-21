@@ -50,11 +50,8 @@ const initCheckboxesAndTracks = (parentDiv, sampleInfo) => {
     }
 
     checkboxElem.addEventListener("click", (e) => {
-      const isChecked = e.target.checked
-
-      updateTrack(name, isChecked)
-
-      if (isChecked) {
+      if (e.target.checked) {
+        updateTrack(name, true)
         loadSpliceJunctionTrack(name, coverage, junctions)
       } else {
         igv.getBrowser().removeTrackByName(name)
@@ -121,7 +118,6 @@ const initIGV = async () => {
     document.querySelectorAll(`input[data-checkbox-track-name="${trackName}"]`).forEach(checkboxElem => {
       if(checkboxElem.checked) {
         checkboxElem.checked = false
-
       }
     })
   })
