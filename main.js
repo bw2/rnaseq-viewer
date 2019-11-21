@@ -35,6 +35,7 @@ const initCheckboxesAndTracks = (parentDiv, sampleInfo) => {
     let checkboxElem = document.createElement("input")
     checkboxElem.setAttribute("type", "checkbox")
     checkboxElem.setAttribute("class", "sample-checkbox")
+    checkboxElem.setAttribute("data-checkbox-track-name", name)
     labelElem.appendChild(checkboxElem)
     labelElem.appendChild(document.createTextNode(name))
     divElem.appendChild(labelElem)
@@ -109,25 +110,29 @@ const initIGV = async () => {
     //save the new location
     updateLocus(locus_string)
   })
+
+  igvBrowser.on('trackremoved', (track) => {
+    const trackName = track.name
+
+    //update state
+    updateTrack(trackName, false)
+
+    // reset checkboxes
+    document.querySelectorAll(`input[data-checkbox-track-name="${trackName}"]`).forEach(checkboxElem => {
+      if(checkboxElem.checked) {
+        checkboxElem.checked = false
+
+      }
+    })
+  })
 }
 
 const initClearAllSamplesButton = () => {
   document.getElementById("clear-all-samples-button").addEventListener('click', () => {
     const reference_track_names = REFERENCE_TRACKS.map(t => t.name)
     getTrackList().filter(trackName => reference_track_names.indexOf(trackName) === -1).forEach(trackName => {
-
-      //update state
-      updateTrack(trackName, false)
-
       // remove tracks from IGV
       igv.getBrowser().removeTrackByName(trackName)
-
-      // reset checkboxes
-      document.querySelectorAll('#samples input').forEach(checkboxElem => {
-        if(checkboxElem.checked) {
-          checkboxElem.checked = false
-        }
-      })
     })
   })
 }
