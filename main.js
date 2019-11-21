@@ -5,7 +5,7 @@ const loadSpliceJunctionTrack = (name, coverageFilePath, junctionsFilePath) => {
   igv.getBrowser().loadTrack({
     type: 'merged',
     name: name,
-    height: 100,
+    height: 175,
     tracks: [
       {
         type: 'wig',
@@ -115,7 +115,7 @@ const initClearAllSamplesButton = () => {
   document.getElementById("clear-all-samples-button").addEventListener('click', () => {
     const reference_track_names = REFERENCE_TRACKS.map(t => t.name)
     getTrackList().filter(trackName => reference_track_names.indexOf(trackName) === -1).forEach(trackName => {
-      
+
       //update state
       updateTrack(trackName, false)
 
