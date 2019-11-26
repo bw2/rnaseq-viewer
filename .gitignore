@@ -1,23 +1,23 @@
-.idea*
-*.iml
-*.sqlite3
-*.log
-*.db
-django_key
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-ui/node_modules
-ui/jest*
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
 
-docs/*.rst
-docs/_build
-docs/Makefile
+# testing
+/coverage
 
-*.pyc
-*.DS_Store
-.ipynb_checkpoints
+# production
+/build
 
-deploy/secrets/gcloud*/*
-deploy/secrets/gcloud*/*
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-pedigree_images/*
-seqr_settings
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
