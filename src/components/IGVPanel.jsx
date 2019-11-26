@@ -9,13 +9,13 @@ class IGVPanel extends React.Component
   static propTypes = {
     referenceGenome: PropTypes.string,
     locus: PropTypes.string,
-    displaySettings: PropTypes.object,
+    options: PropTypes.object,
     selectedSamplesList: PropTypes.array,
     updateLocus: PropTypes.func,
   }
 
-  static getOauthTokenFn = () => {
-    return fetch('/api/google_auth_token').then(response => response.json()).then(j => j.auth_token)
+  shouldComponentUpdate(nextProps, nextState) {
+    return false
   }
 
   render() {
@@ -65,7 +65,7 @@ class IGVPanel extends React.Component
         })
       }
       */
-      if (this.props.displaySettings.showBams && sample.bam) {
+      if (this.props.options.showBams && sample.bam) {
         //docs @ https://github.com/igvteam/igv.js/wiki/Alignment-Track
         console.log(`Adding ${sample.bam} track`)
 
@@ -96,11 +96,10 @@ class IGVPanel extends React.Component
       showCommandBar: true,
     }
 
-    console.log('igvOptions', igvOptions)
-
-    return <IGV igvOptions={igvOptions} locusChangedHandler={evt => this.props.updateLocus(evt.label)} />
+    return <IGV igvOptions={igvOptions} locusChangedHandler={evt => this.props.updateLocus(evt.label.replace(',', ''))} />
   }
 }
+
 
 const mapDispatchToProps = dispatch => ({
   updateLocus: (newLocus) => {
@@ -114,7 +113,7 @@ const mapDispatchToProps = dispatch => ({
 const mapStateToProps = state => ({
   referenceGenome: state.referenceGenome,
   locus: state.locus,
-  displaySettings: state.displaySettings,
+  options: state.options,
   selectedSamplesList: getSelectedSamplesList(state),
 })
 

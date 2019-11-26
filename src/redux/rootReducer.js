@@ -12,7 +12,7 @@ const rootReducer = combineReducers(Object.assign({
   //loci: createObjectsByIdReducer('UPDATE_LOCI'),
   referenceGenome: zeroActionsReducer,
   locus: createSingleValueReducer('UPDATE_LOCUS', ''),
-  displaySettings: createSingleObjectReducer('UPDATE_DISPLAY_SETTINGS'),
+  options: createSingleObjectReducer('UPDATE_OPTIONS'),
   samplesInfo: zeroActionsReducer,
   selectedSampleIds: createSingleValueReducer('UPDATE_SELECTED_SAMPLES', []),
 }))

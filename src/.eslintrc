@@ -1,9 +1,4 @@
 {
-  "extends": [
-    "airbnb",
-    "plugin:react-perf/recommended"
-  ],
-
   "parser": "babel-eslint",
   "parserOptions": {
     "ecmaFeatures": {

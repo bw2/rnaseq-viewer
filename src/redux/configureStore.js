@@ -58,7 +58,7 @@ SAMPLE_TRACKS.push(...'1179-1, 1211-1, 1258-1, 126BG_CB_M1, 146BO_JB_M1, 149BP_A
 const INITIAL_STATE = {
   referenceGenome: '38',
   locus: 'chr15:12345-54321',
-  displaySettings: {},
+  options: {},
   samplesInfo: [
     {
       name: 'Reference Tracks',
@@ -72,7 +72,7 @@ const INITIAL_STATE = {
 }
 
 const PERSISTING_STATE = [
-  'displaySettings', 'locus', 'selectedSampleIds',
+  'options', 'locus', 'selectedSampleIds',
 ]
 
 const persistStoreMiddleware = store => next => (action) => {

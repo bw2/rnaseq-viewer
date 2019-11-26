@@ -8,10 +8,10 @@ import { getSamplesInfo, getSelectedSampleIds } from '../redux/selectors'
 class LeftSideBar extends React.Component
 {
   static propTypes = {
-    displaySettings: PropTypes.object,
+    options: PropTypes.object,
     samplesInfo: PropTypes.array,
     selectedSampleIds: PropTypes.array,
-    updateDisplaySettings: PropTypes.func,
+    updateOptions: PropTypes.func,
     updateSelectedSampleIds: PropTypes.func,
   }
 
@@ -24,8 +24,8 @@ class LeftSideBar extends React.Component
         <h3> DISPLAY </h3>
         <Checkbox
           label="show BAMs"
-          checked={this.props.displaySettings.showBams}
-          onChange={(e, data) => this.props.updateDisplaySettings({ showBams: data.checked })}
+          checked={this.props.options.showBams}
+          onChange={(e, data) => this.props.updateOptions({ showBams: data.checked })}
         />
 
         {
@@ -62,7 +62,7 @@ class LeftSideBar extends React.Component
 }
 
 const mapStateToProps = state => ({
-  displaySettings: state.displaySettings,
+  options: state.options,
   selectedSampleIds: getSelectedSampleIds(state),
   samplesInfo: getSamplesInfo(state),
 })
@@ -74,9 +74,9 @@ const mapDispatchToProps = dispatch => ({
       newValue: selectedSampleIds,
     })
   },
-  updateDisplaySettings: (newSettings) => {
+  updateOptions: (newSettings) => {
     dispatch({
-      type: 'UPDATE_DISPLAY_SETTINGS',
+      type: 'UPDATE_OPTIONS',
       updates: newSettings,
     })
   },
