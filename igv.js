@@ -23700,30 +23700,6 @@ Context.prototype = {
     return range;
   }
 
-  /*
-   * The MIT License (MIT)
-   *
-   * Copyright (c) 2014 Broad Institute
-   *
-   * Permission is hereby granted, free of charge, to any person obtaining a copy
-   * of this software and associated documentation files (the "Software"), to deal
-   * in the Software without restriction, including without limitation the rights
-   * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-   * copies of the Software, and to permit persons to whom the Software is
-   * furnished to do so, subject to the following conditions:
-   *
-   * The above copyright notice and this permission notice shall be included in
-   * all copies or substantial portions of the Software.
-   *
-   *
-   * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-   * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-   * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-   * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-   * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-   * THE SOFTWARE.
-   */
   /**
    *  Define parsers for bed-like files  (.bed, .gff, .vcf, etc).  A parser should implement 2 methods
    *
@@ -24256,7 +24232,13 @@ Context.prototype = {
       // }
       // feature.id = id ? id : tmp;
       // feature.name = name ? name : tmp;
-      feature.name = tokens[3];
+      if (tokens[3].indexOf(';') == -1) {
+        feature.name = tokens[3];
+      } else {
+        //parse gffTags
+        feature.attributes = parseAttributeString(tokens[3], '=');
+        feature.name = feature.attributes['Name'];
+      }
     }
 
     if (tokens.length > 4) {
@@ -24705,6 +24687,50 @@ Context.prototype = {
 
     return feature;
   }
+
+  function parseAttributeString(attributeString, keyValueDelim) {
+    // parse 'attributes' string (see column 9 docs in https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md)
+    var attributes = {};
+    var _iteratorNormalCompletion3 = true;
+    var _didIteratorError3 = false;
+    var _iteratorError3 = undefined;
+
+    try {
+      for (var _iterator3 = attributeString.split(';')[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+        var kv = _step3.value;
+
+        var _t = kv.trim().split(keyValueDelim, 2);
+
+        if (_t.length === 2) {
+          var key = _t[0].trim();
+
+          var value = _t[1].trim(); //Strip off quotes, if any
+
+
+          if (value.startsWith('"') && value.endsWith('"')) {
+            value = value.substr(1, value.length - 2);
+          }
+
+          attributes[key] = value;
+        }
+      }
+    } catch (err) {
+      _didIteratorError3 = true;
+      _iteratorError3 = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
+          _iterator3.return();
+        }
+      } finally {
+        if (_didIteratorError3) {
+          throw _iteratorError3;
+        }
+      }
+    }
+
+    return attributes;
+  }
   /**
    * Decode a single gff record (1 line in file).  Aggregations such as gene models are constructed at a higher level.
    *      ctg123 . mRNA            1050  9000  .  +  .  ID=mRNA00001;Parent=gene00001
@@ -24744,49 +24770,17 @@ Context.prototype = {
     attributeString = tokens[8]; // Find ID and Parent, or transcript_id
 
     var delim = 'gff3' === format ? '=' : /\s+/;
-    var attributes = {};
-    var _iteratorNormalCompletion3 = true;
-    var _didIteratorError3 = false;
-    var _iteratorError3 = undefined;
+    var attributes = parseAttributeString(attributeString, delim);
 
-    try {
-      for (var _iterator3 = attributeString.split(';')[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-        var kv = _step3.value;
-        var t = kv.trim().split(delim, 2);
+    for (var _i2 = 0, _Object$entries = Object.entries(attributes); _i2 < _Object$entries.length; _i2++) {
+      var _Object$entries$_i = _slicedToArray(_Object$entries[_i2], 2),
+          key = _Object$entries$_i[0],
+          value = _Object$entries$_i[1];
 
-        if (t.length === 2) {
-          var key = t[0].trim();
-          var value = t[1].trim(); //Strip off quotes, if any
+      var keyLower = key.toLowerCase();
+      if ("color" === keyLower || "colour" === keyLower) color = IGVColor.createColorString(t[1]);else if ('gff3' === format) attributes[key] = decodeURIComponent(value);
+    } // Find name (label) property
 
-          if (value.startsWith('"') && value.endsWith('"')) {
-            value = value.substr(1, value.length - 2);
-          }
-
-          var keyLower = key.toLowerCase();
-          if ("color" === keyLower || "colour" === keyLower) color = IGVColor.createColorString(t[1]);else {
-            if ('gff3' === format) {
-              value = decodeURIComponent(value);
-            }
-
-            attributes[key] = value;
-          }
-        }
-      } // Find name (label) property
-
-    } catch (err) {
-      _didIteratorError3 = true;
-      _iteratorError3 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-          _iterator3.return();
-        }
-      } finally {
-        if (_didIteratorError3) {
-          throw _iteratorError3;
-        }
-      }
-    }
 
     if (this.nameField) {
       name = attributes[this.nameField];
@@ -24844,11 +24838,14 @@ Context.prototype = {
     try {
       for (var _iterator4 = kvs[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
         var kv = _step4.value;
-        var t = kv.trim().split(this.delim, 2);
 
-        if (t.length === 2 && t[1] !== undefined) {
-          var key = t[0].trim();
-          var value = t[1].trim(); //Strip off quotes, if any
+        var _t2 = kv.trim().split(this.delim, 2);
+
+        if (_t2.length === 2 && _t2[1] !== undefined) {
+          var key = _t2[0].trim();
+
+          var value = _t2[1].trim(); //Strip off quotes, if any
+
 
           if (value.startsWith('"') && value.endsWith('"')) {
             value = value.substr(1, value.length - 2);
@@ -30566,17 +30563,8 @@ Context.prototype = {
       try {
         for (var _iterator = featureList[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var feature = _step.value;
-
-          if (feature.end < bpStart) {
-            console.warn('skipping1 feature', feature);
-            continue;
-          }
-
-          if (feature.start > bpEnd) {
-            console.warn('skipping2 - all features after/including', feature);
-            break;
-          }
-
+          if (feature.end < bpStart) continue;
+          if (feature.start > bpEnd) break;
           var row = this.displayMode === 'COLLAPSED' ? 0 : feature.row;
           var pxEnd = Math.ceil((feature.end - bpStart) / bpPerPixel);
           var last = lastPxEnd[row];
@@ -30595,8 +30583,6 @@ Context.prototype = {
             }
 
             lastPxEnd[row] = pxEnd;
-          } else {
-            console.warn('skipping3 feature', feature);
           }
         }
       } catch (err) {
@@ -31042,27 +31028,27 @@ Context.prototype = {
     }
 
     var cy = py + 0.5 * rowHeight;
-    var top_y = cy - 0.5 * rowHeight;
-    var bottom_y = cy + 0.5 * rowHeight; // draw the junction arc
+    var topY = cy - 0.5 * rowHeight;
+    var bottomY = cy + 0.5 * rowHeight; // draw the junction arc
 
-    var junction_left_px = Math.round((feature.junction_left - bpStart) / xScale);
-    var junction_right_px = Math.round((feature.junction_right - bpStart) / xScale);
+    var junctionLeftPx = Math.round((feature.junction_left - bpStart) / xScale);
+    var junctionRightPx = Math.round((feature.junction_right - bpStart) / xScale);
     ctx.beginPath();
-    ctx.moveTo(junction_left_px, cy);
-    ctx.bezierCurveTo(junction_left_px, top_y, junction_right_px, top_y, junction_right_px, cy);
+    ctx.moveTo(junctionLeftPx, cy);
+    ctx.bezierCurveTo(junctionLeftPx, topY, junctionRightPx, topY, junctionRightPx, cy);
     ctx.lineWidth = 1 + Math.log(feature.num_junction_reads) / Math.log(2);
     ctx.strokeStyle = 'blue';
     ctx.stroke(); // draw the spanning arcs
 
-    var spanning_coords = feature.spanning_frag_coords;
+    var spanningCoords = feature.spanning_frag_coords;
 
-    for (var i = 0; i < spanning_coords.length; i++) {
-      var spanning_info = spanning_coords[i];
-      var span_left_px = Math.round((spanning_info.left - bpStart) / xScale);
-      var span_right_px = Math.round((spanning_info.right - bpStart) / xScale);
+    for (var i = 0; i < spanningCoords.length; i++) {
+      var spanningInfo = spanningCoords[i];
+      var spanLeftPx = Math.round((spanningInfo.left - bpStart) / xScale);
+      var spanRightPx = Math.round((spanningInfo.right - bpStart) / xScale);
       ctx.beginPath();
-      ctx.moveTo(span_left_px, cy);
-      ctx.bezierCurveTo(span_left_px, bottom_y, span_right_px, bottom_y, span_right_px, cy);
+      ctx.moveTo(spanLeftPx, cy);
+      ctx.bezierCurveTo(spanLeftPx, bottomY, spanRightPx, bottomY, spanRightPx, cy);
       ctx.lineWidth = 1;
       ctx.strokeStyle = 'purple';
       ctx.stroke();
@@ -31079,7 +31065,6 @@ Context.prototype = {
 
 
   function renderJunctions(feature, bpStart, xScale, pixelHeight, ctx) {
-    console.warn('-----', feature.row, feature);
     var py;
     var rowHeight = this.config.height;
 
@@ -31092,50 +31077,115 @@ Context.prototype = {
     }
 
     var cy = py + 0.5 * rowHeight;
-    var top_y = cy - 0.5 * rowHeight;
-    var bottom_y = cy + 0.5 * rowHeight;
-    var bezier_bottom_y = bottom_y - 10; // draw the junction arc
+    var topY = py;
+    var bottomY = py + rowHeight;
+    var bezierBottomY = bottomY - 10; // draw the junction arc
 
-    var junction_left_px = Math.round((feature.start - bpStart) / xScale);
-    var junction_right_px = Math.round((feature.end - bpStart) / xScale);
-    var junction_middle_px = (junction_left_px + junction_right_px) / 2;
-    var bezier_control_left_px = (junction_left_px + junction_middle_px) / 2;
-    var bezier_control_right_px = (junction_middle_px + junction_right_px) / 2;
-    var uniquely_mapped_read_count = feature.score;
-    var total_read_count = feature.name;
-    var multi_mapped_read_count = total_read_count - uniquely_mapped_read_count;
-    var line_width = 1 + Math.log(uniquely_mapped_read_count + 1) / Math.log(12); // data source: STAR splice junctions (eg. SJ.out.tab file converted to bed).
+    var junctionLeftPx = Math.round((feature.start - bpStart) / xScale);
+    var junctionRightPx = Math.round((feature.end - bpStart) / xScale);
+    var junctionMiddlePx = (junctionLeftPx + junctionRightPx) / 2;
+    var bezierControlLeftPx = (junctionLeftPx + junctionMiddlePx) / 2;
+    var bezierControlRightPx = (junctionMiddlePx + junctionRightPx) / 2;
+
+    if (this.config.hideAnnotatedJunctions && feature.attributes.annotated_junction === "true") {
+      return;
+    }
+
+    if (this.config.hideUnannotatedJunctions && feature.attributes.annotated_junction === "false") {
+      return;
+    }
+
+    var uniquelyMappedReadCount = parseInt(feature.attributes.uniquely_mapped);
+
+    if (uniquelyMappedReadCount < this.config.minUniquelyMappedReads) {
+      return;
+    }
+
+    var multiMappedReadCount = parseInt(feature.attributes.multi_mapped);
+    var totalReadCount = uniquelyMappedReadCount + multiMappedReadCount;
+
+    if (totalReadCount < this.config.minTotalReads) {
+      return;
+    }
+
+    if (totalReadCount > 0 && multiMappedReadCount / totalReadCount > this.config.maxFractionMultiMappedReads) {
+      return;
+    }
+
+    var maximumSplicedAlignmentOverhang = parseInt(feature.attributes.maximum_spliced_alignment_overhang);
+
+    if (maximumSplicedAlignmentOverhang < this.config.minSplicedAlignmentOverhang) {
+      return;
+    }
+
+    var lineWidth;
+
+    if (typeof this.config.thicknessBasedOn === 'undefined' || this.config.thicknessBasedOn === 'numUniqueReads') {
+      lineWidth = uniquelyMappedReadCount;
+    } else if (this.config.thicknessBasedOn === 'numReads') {
+      lineWidth = totalReadCount;
+    } else if (this.config.thicknessBasedOn === 'isAnnotatedJunction') {
+      lineWidth = feature.attributes.annotated_junction === "true" ? 20 : 100;
+    }
+
+    lineWidth = 1 + Math.log(lineWidth + 1) / Math.log(12);
+    var bounceHeight;
+
+    if (typeof this.config.thicknessBasedOn === 'undefined' || this.config.bounceHeightBasedOn === 'random') {
+      // randomly but deterministically stagger topY coordinates to reduce overlap
+      bounceHeight = (feature.start + feature.end) % 7;
+    } else if (this.config.bounceHeightBasedOn === 'distance') {
+      bounceHeight = (feature.end - feature.start) / 1000;
+    } else if (this.config.bounceHeightBasedOn === 'thickness') {
+      bounceHeight = 2 * lineWidth;
+    }
+
+    topY += rowHeight * Math.max(7 - bounceHeight, 0) / 10;
+    var color;
+
+    if (typeof this.config.colorBy === 'undefined' || this.config.colorBy === 'numUniqueReads') {
+      color = uniquelyMappedReadCount > 5 ? 'blue' : '#AAAAAA'; // color gradient?
+    } else if (this.config.colorBy === 'numReads') {
+      color = totalReadCount > 5 ? 'blue' : '#AAAAAA';
+    } else if (this.config.colorBy === 'isAnnotatedJunction') {
+      color = feature.attributes.annotated_junction === "true" ? '#b0b0ec' : 'orange';
+    } else if (this.config.colorBy === 'strand') {
+      color = feature.strand === "+" ? '#b0b0ec' : '#ecb0b0';
+    }
+
+    var label = '';
+
+    if (typeof this.config.labelUniqueReadCount === 'undefined' && typeof this.config.labelMultiMappedReadCount === 'undefined' && typeof this.config.labelTotalReadCount === 'undefined') {
+      //default label
+      label += uniquelyMappedReadCount + (multiMappedReadCount == 0 ? '' : '(+' + multiMappedReadCount + ')');
+    } else {
+      if (this.config.labelTotalReadCount) {
+        label += totalReadCount;
+      } else if (this.config.labelUniqueReadCount) {
+        label += uniquelyMappedReadCount;
+      }
+
+      if (this.config.labelMultiMappedReadCount && multiMappedReadCount > 0) {
+        label += ' (+' + multiMappedReadCount + ')';
+      }
+    }
+
+    if (this.config.labelIsAnnotatedJunction && feature.attributes.annotated_junction === "true") {
+      label += this.config.labelIsAnnotatedJunction;
+    } // data source: STAR splice junctions (eg. SJ.out.tab file converted to bed).
     // .bed "name" field used to store unique + multi-mapped read counts, so:
     // feature.score:  unique spanning read counts
     // feature.name:   unique + multi-mapped spanning read counts
     //example feature:  { chr: "chr17", start: 39662344, end: 39662803, name: "59", row: 0, score: 38, strand: "+"}
 
+
     ctx.beginPath();
-    ctx.moveTo(junction_left_px, bezier_bottom_y);
-    ctx.bezierCurveTo(bezier_control_left_px, top_y, bezier_control_right_px, top_y, junction_right_px, bezier_bottom_y);
-    ctx.lineWidth = line_width;
-    ctx.strokeStyle = uniquely_mapped_read_count > 5 ? 'red' : 'blue';
+    ctx.moveTo(junctionLeftPx, bezierBottomY);
+    ctx.bezierCurveTo(bezierControlLeftPx, topY, bezierControlRightPx, topY, junctionRightPx, bezierBottomY);
+    ctx.lineWidth = lineWidth;
+    ctx.strokeStyle = color;
     ctx.stroke();
-    var label = uniquely_mapped_read_count + (multi_mapped_read_count == 0 ? '' : '(+' + multi_mapped_read_count + ')');
-    ctx.fillText(label, junction_middle_px - ctx.measureText(label).width / 2, (7 * top_y + cy) / 8);
-    /*
-    console.warn('feature.row', feature.row)
-    console.warn('rowHeight', rowHeight)
-    console.warn('py', py)
-    console.warn('top_y', top_y)
-    console.warn('bottom_y', bottom_y)
-    console.warn('rendered splice junction', junction_left_px, junction_right_px, ctx.lineWidth, line_width > 1.5 ? 'red' : 'blue')
-     console.warn('cy', cy)
-    console.warn('top_y', top_y)
-    console.warn('bottom_y', bottom_y)
-    console.warn('junction_left_px', junction_left_px)
-    console.warn('junction_right_px', junction_right_px)
-    console.warn('spanning_read_count', uniquely_mapped_read_count)
-    console.warn('spanning_read_count', multi_mapped_read_count)
-    console.warn('bezier curve p1: ', bezier_control_left_px, top_y)
-    console.warn('bezier curve p2: ', bezier_control_right_px, top_y)
-    console.warn('bezier curve p3: ', junction_right_px, bezier_bottom_y)
-    */
+    ctx.fillText(label, junctionMiddlePx - ctx.measureText(label).width / 2, (7 * topY + cy) / 8);
   } // SNP constants
 
 
@@ -33518,31 +33568,6 @@ Context.prototype = {
     }
   };
 
-  /*
-   * The MIT License (MIT)
-   *
-   * Copyright (c) 2016-2017 The Regents of the University of California
-   * Author: Jim Robinson
-   *
-   * Permission is hereby granted, free of charge, to any person obtaining a copy
-   * of this software and associated documentation files (the "Software"), to deal
-   * in the Software without restriction, including without limitation the rights
-   * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-   * copies of the Software, and to permit persons to whom the Software is
-   * furnished to do so, subject to the following conditions:
-   *
-   * The above copyright notice and this permission notice shall be included in
-   * all copies or substantial portions of the Software.
-   *
-   *
-   * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-   * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-   * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-   * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-   * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-   * THE SOFTWARE.
-   */
   var MergedTrack = extend(TrackBase, function (config, browser) {
     var self = this;
 
@@ -33558,7 +33583,6 @@ Context.prototype = {
     this.tracks = [];
     config.tracks.forEach(function (tconf) {
       if (!tconf.type) inferTrackTypes(tconf);
-      console.warn('-- MergedTrack: creating track', tconf.type, tconf.format, tconf.name);
       tconf.isMergedTrack = true;
       tconf.height = config.height;
       var t = browser.createTrack(tconf);
@@ -33567,6 +33591,8 @@ Context.prototype = {
         t.autoscale = false; // Scaling done from merged track
 
         self.tracks.push(t);
+      } else {
+        console.warn("Could not create track " + tconf);
       }
     });
   });
@@ -33588,9 +33614,7 @@ Context.prototype = {
       trackOptions = Object.assign({}, options);
       trackOptions.features = mergedFeatures[i];
       this.tracks[i].dataRange = dataRange;
-      console.warn('-- drawing', trackOptions.features.length, 'features for', this.tracks[i].name);
       this.tracks[i].draw(trackOptions);
-      console.warn('-- done drawing track', this.tracks[i].name);
     }
   };
 
@@ -33606,6 +33630,17 @@ Context.prototype = {
         if (autoscale) break;
       }
     }
+  };
+
+  MergedTrack.prototype.popupData = function (config) {
+    var popupDataFromAllTracks = [];
+
+    for (var i = 0, len = this.tracks.length; i < len; i++) {
+      var popupData = this.tracks[i].popupData(config);
+      popupDataFromAllTracks.push.apply(popupDataFromAllTracks, _toConsumableArray(popupData));
+    }
+
+    return popupDataFromAllTracks;
   };
 
   function autoscale(chr, featureArrays) {
@@ -58373,7 +58408,7 @@ Context.prototype = {
     document.head.insertBefore(style, document.head.childNodes[document.head.childNodes.length - 1]);
   }
 
-  var _version = "2.3.5 (b31d5f34c5e8d8119672238fa224001db93fddf4)";
+  var _version = "2.3.5 (9901297ffc69062b5c4462edba2c479cc9fabcea)";
 
   function version$1() {
     return _version;
