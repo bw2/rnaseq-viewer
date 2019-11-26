@@ -2,6 +2,33 @@
 const loadSpliceJunctionTrack = (name, coverageFilePath, junctionsFilePath) => {
   console.log('Loading coverageFilePath', coverageFilePath)
   console.log('Loading junctionsFilePath', junctionsFilePath)
+
+  let minUniquelyMappedReads = parseInt(document.getElementById('minUniquelyMappedReads').value);
+  let minTotalReads = parseInt(document.getElementById('minTotalReads').value);
+  let maxFractionMultiMappedReads = parseInt(document.getElementById('maxFractionMultiMappedReads').value);
+  let minSplicedAlignmentOverhang = parseInt(document.getElementById('minSplicedAlignmentOverhang').value);
+  let labelIsAnnotatedJunction = document.getElementById('labelIsAnnotatedJunction').value;
+  let thicknessBasedOn = document.getElementById('thicknessBasedOn').value;
+  let bounceHeightBasedOn = document.getElementById('bounceHeightBasedOn').value;
+  let colorBy = document.getElementById('colorBy').value;
+  let hideAnnotatedJunctions = document.getElementById('hideAnnotatedJunctions').checked;
+  let hideUnannotatedJunctions = document.getElementById('hideUnannotatedJunctions').checked;
+  /*
+            minUniquelyMappedReads: 1,
+            minTotalReads: 1,
+            maxFractionMultiMappedReads: 1,
+            minSplicedAlignmentOverhang: 0,
+            thicknessBasedOn: 'numUniqueReads', //options: numUniqueReads (default), numReads, isAnnotatedJunction
+            bounceHeightBasedOn: 'random', //options: random (default), distance, thickness
+            colorBy: 'isAnnotatedJunction', //options: numUniqueReads (default), numReads, isAnnotatedJunction, strand
+            labelUniqueReadCount: true,
+            labelMultiMappedReadCount: true,
+            labelTotalReadCount: false,
+            labelIsAnnotatedJunction: " [A]",
+            hideAnnotatedJunctions: false,
+            hideUnannotatedJunctions: false,
+         */
+
   igv.getBrowser().loadTrack({
     type: 'merged',
     name: name,
@@ -20,6 +47,19 @@ const loadSpliceJunctionTrack = (name, coverageFilePath, junctionsFilePath) => {
         indexURL: `${junctionsFilePath}.tbi`,
         displayMode: 'COLLAPSED',
         //oauthToken: token,
+        minUniquelyMappedReads: minUniquelyMappedReads,
+        minTotalReads: minTotalReads,
+        maxFractionMultiMappedReads: maxFractionMultiMappedReads,
+        minSplicedAlignmentOverhang: minSplicedAlignmentOverhang,
+        thicknessBasedOn: thicknessBasedOn, //options: numUniqueReads (default), numReads, isAnnotatedJunction
+        bounceHeightBasedOn: bounceHeightBasedOn, //options: random (default), distance, thickness
+        colorBy: colorBy, //options: numUniqueReads (default), numReads, isAnnotatedJunction, strand
+        labelUniqueReadCount: true,
+        labelMultiMappedReadCount: true,
+        labelTotalReadCount: false,
+        labelIsAnnotatedJunction: labelIsAnnotatedJunction,
+        hideAnnotatedJunctions: hideAnnotatedJunctions,
+        hideUnannotatedJunctions: hideUnannotatedJunctions,
       },
     ],
   })
@@ -137,13 +177,16 @@ const initApp = async () => {
 
   initGlobalProperties()
 
-  await initGoogleClient()
-
-  await googleSignIn()
-
-  igv.oauth.google.setToken(getGoogleAccessToken)
+  try {
+    await initGoogleClient()
+    await googleSignIn()
+    igv.oauth.google.setToken(getGoogleAccessToken)
+  } catch(e) {
+    console.error("Couldn't authenticate to google", e)
+  }
 
   await initIGV()
+
 
   initCheckboxesAndTracks(document.getElementById('reference-tracks'), REFERENCE_TRACKS)
   initCheckboxesAndTracks(document.getElementById('samples'), SAMPLE_TRACKS)
@@ -153,6 +196,29 @@ const initApp = async () => {
   await initSignOutButton()
 
 
+  /*
+
+  let x = ['minUniquelyMappedReads', 'minTotalReads', 'maxFractionMultiMappedReads', 'minSplicedAlignmentOverhang',
+    'labelIsAnnotatedJunction', 'thicknessBasedOn', 'bounceHeightBasedOn', 'colorBy',
+    'hideAnnotatedJunctions', 'hideUnannotatedJunctions']
+
+  x.forEach(elemId => {
+    document.getElementById(elemId).addEventListener("change", (e) => {
+      getTrackList().forEach(trackName => {
+        // remove tracks from IGV
+        igv.getBrowser().removeTrackByName(trackName)
+
+        document.querySelectorAll(`input[data-checkbox-track-name="${trackName}"]`).forEach(checkboxElem => {
+          console.log('resetting track', trackName)
+          checkboxElem.checked = false
+          checkboxElem.checked = true
+
+        })
+      })
+    })
+  })
+  */
+  
   //init local files input
   //document.getElementById('local-files').addEventListener('change', handleFileSelect, false)
 

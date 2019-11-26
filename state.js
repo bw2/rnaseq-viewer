@@ -3,7 +3,7 @@
  */
 
 let GLOBAL_PROPERTIES = {
-  'locus': 'chr15:92,882,678-92,884,209',
+  'locus': 'chr15:92835700-93031800',
   'tracks': '',
 }
 
