@@ -3,7 +3,7 @@ f = open("rnaseq_viewer_config.all_samples.yml", "w")
 
 f.write("""referenceGenome: "38"
 
-currentLocus: "chr1:50000-51000"
+locus: "chr1:50000-51000"
 
 loci:
   - chr1

@@ -1,6 +1,6 @@
 referenceGenome: "38"
 
-currentLocus: "chr1:50000-51000"
+locus: "chr1:50000-51000"
 
 loci:
   - chr1
