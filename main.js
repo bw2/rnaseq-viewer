@@ -193,32 +193,29 @@ const initApp = async () => {
 
   initClearAllSamplesButton()
 
-  await initSignOutButton()
+  try {
+    await initSignOutButton()
+  } catch(e) {
+    console.error("Couldn't init SignOut button", e)
+  }
 
-
-  /*
-
-  let x = ['minUniquelyMappedReads', 'minTotalReads', 'maxFractionMultiMappedReads', 'minSplicedAlignmentOverhang',
+  ['minUniquelyMappedReads', 'minTotalReads', 'maxFractionMultiMappedReads', 'minSplicedAlignmentOverhang',
     'labelIsAnnotatedJunction', 'thicknessBasedOn', 'bounceHeightBasedOn', 'colorBy',
-    'hideAnnotatedJunctions', 'hideUnannotatedJunctions']
+    'hideAnnotatedJunctions', 'hideUnannotatedJunctions'].forEach(elemId => {
 
-  x.forEach(elemId => {
-    document.getElementById(elemId).addEventListener("change", (e) => {
+    document.getElementById(elemId).addEventListener("click", (e) => {
       getTrackList().forEach(trackName => {
         // remove tracks from IGV
         igv.getBrowser().removeTrackByName(trackName)
 
         document.querySelectorAll(`input[data-checkbox-track-name="${trackName}"]`).forEach(checkboxElem => {
-          console.log('resetting track', trackName)
-          checkboxElem.checked = false
-          checkboxElem.checked = true
-
+          checkboxElem.setAttribute("checked", "false");
+          checkboxElem.click()
         })
       })
     })
   })
-  */
-  
+
   //init local files input
   //document.getElementById('local-files').addEventListener('change', handleFileSelect, false)
 
