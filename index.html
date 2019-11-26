@@ -31,9 +31,9 @@
 
         const SAMPLE_TRACKS = []
 
-        SAMPLE_TRACKS.push(...['sampleA', 'sampleB', '2sample'].map(name => {   //, 'sampleC', '2sample', '3sample'
+        SAMPLE_TRACKS.push(...['sampleA', 'sampleB', 'samples_A_and_B'].map(name => {   //, 'sampleC', '2sample', '3sample'
             return {
-                name: name.replace('sampleA', 'sample A').replace('sampleB', 'sample B').replace('sampleC', 'sample C').replace('2sample', 'samples A + B').replace('3sample', 'samples A + B + C'),
+                name: name.replace('sampleA', 'sample A').replace('sampleB', 'sample B').replace('sampleC', 'sample C').replace('samples_A_and_B', 'samples A + B').replace('3sample', 'samples A + B + C'),
                 coverage: `gs://seqr-hail/splice_junction_track_test_cases/${name}.chr15-92835700-93031800.bigWig`,
                 junctions: `gs://seqr-hail/splice_junction_track_test_cases/${name}.SJ.out.chr15-92835700-93031800.bed.gz`,
             }
