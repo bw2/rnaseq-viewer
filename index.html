@@ -3,35 +3,35 @@
     <title>RNA-seq viewer</title>
 
     <script>
+        const REFERENCE_DATA_ROOT = "gs://macarthurlab-rnaseq/GTEx_ref_data"
         const REFERENCE_TRACKS = [
             {
                 name: "Muscle",
                 description: "100 GTEx muscle samples combined by summing raw coverage values and raw splice-junction-spanning read counts across all 100 samples.",
-                junctions: "gs://macarthurlab-rnaseq/GTEx_ref_data/muscle_100_GTEx_samples.SJ.out.tab.bed.gz",
-                coverage: "gs://macarthurlab-rnaseq/GTEx_ref_data/muscle_100_GTEx_samples.bigWig",
+                junctions: `${REFERENCE_DATA_ROOT}/muscle_100_GTEx_samples.SJ.out.tab.bed.gz`,
+                coverage: `${REFERENCE_DATA_ROOT}/muscle_100_GTEx_samples.bigWig`,
             },
             {
                 name: "Blood",
                 description: "100 GTEx blood samples combined by summing raw coverage values and raw splice-junction-spanning read counts across all 100 samples.",
-                junctions: "gs://macarthurlab-rnaseq/GTEx_ref_data/blood_100_GTEx_samples.SJ.out.tab.bed.gz",
-                coverage: "gs://macarthurlab-rnaseq/GTEx_ref_data/blood_100_GTEx_samples.bigWig",
+                junctions: `${REFERENCE_DATA_ROOT}/blood_100_GTEx_samples.SJ.out.tab.bed.gz`,
+                coverage: `${REFERENCE_DATA_ROOT}blood_100_GTEx_samples.bigWig`,
             },
             {
                 name: "Fibroblast",
                 description: "100 GTEx fibroblast samples combined by summing raw coverage values and raw splice-junction-spanning read counts across all 100 samples.",
-                junctions: "gs://macarthurlab-rnaseq/GTEx_ref_data/fibs_100_GTEx_samples.SJ.out.tab.bed.gz",
-                coverage: "gs://macarthurlab-rnaseq/GTEx_ref_data/fibs_100_GTEx_samples.bigWig",
+                junctions: `${REFERENCE_DATA_ROOT}fibs_100_GTEx_samples.SJ.out.tab.bed.gz`,
+                coverage: `${REFERENCE_DATA_ROOT}fibs_100_GTEx_samples.bigWig`,
             },
-
         ]
 
         const SAMPLE_TRACKS = []
-
+        const SAMPLE_DATA_ROOT = "gs://macarthurlab-rnaseq"
         SAMPLE_TRACKS.push(...['sampleA', 'sampleB', 'sampleC', '2sample', '3sample'].map(name => {
             return {
                 name: name.replace('sampleA', 'sample A').replace('sampleB', 'sample B').replace('sampleC', 'sample C').replace('2sample', 'samples A + B').replace('3sample', 'samples A + B + C'),
-                coverage: `gs://macarthurlab-rnaseq/test_data/${name}.bigWig`,
-                junctions: `gs://macarthurlab-rnaseq/test_data/${name}.SJ.out.tab.bed.gz`,
+                coverage: `${SAMPLE_DATA_ROOT}/test_data/${name}.bigWig`,
+                junctions: `${SAMPLE_DATA_ROOT}/test_data/${name}.SJ.out.tab.bed.gz`,
             }
         }))
 
@@ -40,9 +40,9 @@
             .map(name => {
               return {
                 name: name,
-                coverage: `gs://macarthurlab-rnaseq/bigWig/${name}.bigWig`,
-                junctions: `gs://macarthurlab-rnaseq/SJ_out_bed_for_igvjs/${name}.SJ.out.bed.gz`,
-                bam: `gs://macarthurlab-rnaseq/star/${name}.Aligned.sortedByCoord.out.bam`,
+                coverage: `${SAMPLE_DATA_ROOT}/bigWig/${name}.bigWig`,
+                junctions: `${SAMPLE_DATA_ROOT}/SJ_out_bed_for_igvjs/${name}.SJ.out.bed.gz`,
+                bam: `${SAMPLE_DATA_ROOT}/star/${name}.Aligned.sortedByCoord.out.bam`,
               }
             }))
 
