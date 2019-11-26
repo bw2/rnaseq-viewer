@@ -173,6 +173,23 @@ const initClearAllSamplesButton = () => {
   })
 }
 
+const initControls = () => {
+  ['minUniquelyMappedReads', 'minTotalReads', 'maxFractionMultiMappedReads', 'minSplicedAlignmentOverhang',
+    'labelIsAnnotatedJunction', 'thicknessBasedOn', 'bounceHeightBasedOn', 'colorBy',
+    'hideAnnotatedJunctions', 'hideUnannotatedJunctions'].forEach(elemId => {
+
+    document.getElementById(elemId).addEventListener("change", () => {
+      getTrackList().forEach(trackName => {
+        igv.getBrowser().removeTrackByName(trackName)
+        document.querySelectorAll(`input[data-checkbox-track-name="${trackName}"]`).forEach(checkboxElem => {
+          checkboxElem.setAttribute("checked", "false");
+          checkboxElem.click()
+        })
+      })
+    })
+  })
+}
+
 const initApp = async () => {
 
   initGlobalProperties()
@@ -187,7 +204,6 @@ const initApp = async () => {
 
   await initIGV()
 
-
   initCheckboxesAndTracks(document.getElementById('reference-tracks'), REFERENCE_TRACKS)
   initCheckboxesAndTracks(document.getElementById('samples'), SAMPLE_TRACKS)
 
@@ -199,22 +215,7 @@ const initApp = async () => {
     console.error("Couldn't init SignOut button", e)
   }
 
-  ['minUniquelyMappedReads', 'minTotalReads', 'maxFractionMultiMappedReads', 'minSplicedAlignmentOverhang',
-    'labelIsAnnotatedJunction', 'thicknessBasedOn', 'bounceHeightBasedOn', 'colorBy',
-    'hideAnnotatedJunctions', 'hideUnannotatedJunctions'].forEach(elemId => {
-
-    document.getElementById(elemId).addEventListener("click", (e) => {
-      getTrackList().forEach(trackName => {
-        // remove tracks from IGV
-        igv.getBrowser().removeTrackByName(trackName)
-
-        document.querySelectorAll(`input[data-checkbox-track-name="${trackName}"]`).forEach(checkboxElem => {
-          checkboxElem.setAttribute("checked", "false");
-          checkboxElem.click()
-        })
-      })
-    })
-  })
+  initControls()
 
   //init local files input
   //document.getElementById('local-files').addEventListener('change', handleFileSelect, false)
