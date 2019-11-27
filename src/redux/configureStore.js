@@ -72,7 +72,7 @@ const INITIAL_STATE = {
 }
 
 const PERSISTING_STATE = [
-  'options', 'locus', 'selectedSampleIds',
+  'options', 'locus', 'selectedSampleNames',
 ]
 
 const persistStoreMiddleware = store => next => (action) => {

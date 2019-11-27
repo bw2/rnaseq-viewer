@@ -2,7 +2,7 @@ import { createSelector } from 'reselect'
 
 export const getCurrentLocus = state => state.locus
 export const getSamplesInfo = state => state.samplesInfo
-export const getSelectedSampleIds = state => state.selectedSampleIds
+export const getSelectedSampleNames = state => state.selectedSampleNames
 
 /**
  * Expects sample info like:
@@ -29,6 +29,6 @@ export const getSelectedSampleIds = state => state.selectedSampleIds
 
 export const getSelectedSamplesList = createSelector(
   getSamplesInfo,
-  getSelectedSampleIds,
-  (samplesInfo, selectedSampleIds) => samplesInfo.map(category => category.samples).flat().filter(s => selectedSampleIds.includes(s.label)),
+  getSelectedSampleNames,
+  (samplesInfo, selectedSampleNames) => samplesInfo.map(category => category.samples).flat().filter(s => selectedSampleNames.includes(s.label)),
 )

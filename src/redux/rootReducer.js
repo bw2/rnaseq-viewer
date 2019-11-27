@@ -14,7 +14,7 @@ const rootReducer = combineReducers(Object.assign({
   locus: createSingleValueReducer('UPDATE_LOCUS', ''),
   options: createSingleObjectReducer('UPDATE_OPTIONS'),
   samplesInfo: zeroActionsReducer,
-  selectedSampleIds: createSingleValueReducer('UPDATE_SELECTED_SAMPLES', []),
+  selectedSampleNames: createSingleValueReducer('UPDATE_SELECTED_SAMPLES', []),
 }))
 
 export default rootReducer

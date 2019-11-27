@@ -8,7 +8,7 @@ class CenterPanel extends React.Component
 {
   static propTypes = {
     samplesInfo: PropTypes.object,
-    selectedSampleIds: PropTypes.array,
+    selectedSampleNames: PropTypes.array,
   }
 
   render = () =>
@@ -18,7 +18,7 @@ class CenterPanel extends React.Component
           ([categoryName, samples]) =>
             <div key={categoryName}>
               {
-                sortBy(Object.values(samples).filter(s => this.props.selectedSampleIds.includes(s.label)), ['order', 'label']).map(
+                sortBy(Object.values(samples).filter(s => this.props.selectedSampleNames.includes(s.label)), ['order', 'label']).map(
                   sample =>
                     <SashimiPlot
                       key={sample.label}
@@ -40,7 +40,7 @@ class CenterPanel extends React.Component
 
 const mapStateToProps = state => ({
   samplesInfo: state.samplesInfo,
-  selectedSampleIds: state.selectedSampleIds,
+  selectedSampleNames: state.selectedSampleNames,
 })
 
 export { CenterPanel as CenterPanelComponent }

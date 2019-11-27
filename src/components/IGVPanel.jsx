@@ -14,10 +14,6 @@ class IGVPanel extends React.Component
     updateLocus: PropTypes.func,
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return false
-  }
-
   render() {
     const igvTracks = []
 

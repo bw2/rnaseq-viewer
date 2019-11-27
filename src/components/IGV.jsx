@@ -3,7 +3,8 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import igv from 'igv'
 
-// Map font-awesome icons to semantic-ui icons
+const StyledDiv = styled.div`  
+`
 
 const debounced = (delay, fn) => {
   let timerId
@@ -37,7 +38,7 @@ class IGV extends React.Component {
     this.container = element
   }
 
-  render = () => <div><div ref={this.setContainerElement} /></div>
+  render = () => <StyledDiv><div ref={this.setContainerElement} /></StyledDiv>
 
   componentDidMount() {
     console.log('IGV.componentDidMount', this.props)
@@ -49,7 +50,7 @@ class IGV extends React.Component {
         this.browser = browser
 
         if (this.props.locusChangedHandler) {
-          this.browser.on('locuschange', debounced(500, this.props.locusChangedHandler)) //{chr, start, end, label}
+          this.browser.on('locuschange', debounced(300, this.props.locusChangedHandler)) //{chr, start, end, label}
         }
 
         if (this.props.trackRemovedHandler) {
@@ -61,15 +62,13 @@ class IGV extends React.Component {
 
   shouldComponentUpdate = (nextProps, nextState) => {
     console.log('IGV.shouldComponentUpdate', nextProps, nextState)
-
-    return true
+    return false
   }
 
   componentDidUpdate(prevProps) {
     console.log('IGV.componentDidUpdate', prevProps)
-    if (this.browser && prevProps.igvOptions.tracks.length !== this.props.igvOptions.tracks.length) {
+    if (this.browser && prevProps.igvOptions.tracks !== this.props.igvOptions.tracks) {
       console.log('IGV.componentDidUpdate tracks changed')
-      this.browser.removeAllTracks()
       this.props.igvOptions.tracks.forEach((track) => {
         this.browser.loadTrack(track)
       })
