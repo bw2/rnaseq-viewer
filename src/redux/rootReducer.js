@@ -10,7 +10,7 @@ import {
 // root reducer
 const rootReducer = combineReducers(Object.assign({
   //loci: createObjectsByIdReducer('UPDATE_LOCI'),
-  referenceGenome: zeroActionsReducer,
+  genome: zeroActionsReducer,
   locus: createSingleValueReducer('UPDATE_LOCUS', ''),
   options: createSingleObjectReducer('UPDATE_OPTIONS'),
   samplesInfo: zeroActionsReducer,

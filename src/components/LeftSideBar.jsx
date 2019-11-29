@@ -12,15 +12,10 @@ const CategoryH3 = styled.h3`
 `
 const CategoryDetails = styled.div`
   display: inline-block;
-  margin: 0px 0px 0px 30px;
-  color: gray;
+  margin: 0px 0px 0px 15px;
+  color: #999;
   whiteSpace: 'nowrap';
 `
-
-const OptionsPanel = ({options, updateOptions}) =>
-  <div>
-    <Checkbox label="show BAMs" checked={options.showBams} onChange={(e, data) => updateOptions({ showBams: data.checked })} />
-  </div>
 
 
 const CategoryPanel = ({category}) =>
@@ -80,18 +75,13 @@ class LeftSideBar extends React.Component
     //const params = new URLSearchParams(window.location.search)
     return (
       <div>
-
-        <OptionsPanel
-          options={this.props.options}
-          updateOptions={this.props.updateOptions}
-        />
+        <Checkbox label="also show BAM tracks" checked={this.props.options.showBams} onChange={(e, data) => this.props.updateOptions({ showBams: data.checked })} />
 
         <SamplesPanel
           samplesInfo={this.props.samplesInfo}
           selectedSampleNames={this.props.selectedSampleNames}
           updateSelectedSampleNames={this.props.updateSelectedSampleNames}
         />
-
       </div>)
   }
 }
