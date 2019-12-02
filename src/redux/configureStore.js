@@ -4,6 +4,7 @@ import thunkMiddleware from 'redux-thunk'
 import jsurl from 'jsurl'
 
 import { loadState, saveState } from '../utils/localStorage'
+import { MOTIFS } from './constants'
 
 const INITIAL_STATE = {
   genome: 'hg38',
@@ -26,7 +27,7 @@ const INITIAL_STATE = {
     labelMotif: true,
     labelIsAnnotatedJunction: false,
     labelIsAnnotatedJunctionValue: " [A]",
-    hideMotifs: [],
+    ...MOTIFS.reduce((acc, motif) => { return { ...acc, [`hideMotif${motif}`]: false } }, {}),
   },
   bamOptions: {
     trackHeight: 100,

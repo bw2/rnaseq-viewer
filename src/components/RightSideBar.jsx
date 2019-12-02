@@ -4,6 +4,7 @@ import styled from "styled-components"
 import { Checkbox, Icon, Popup } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 import { getSamplesInfo, getSelectedSampleNames, getSjOptions, getBamOptions } from '../redux/selectors'
+import { MOTIFS } from '../redux/constants'
 
 
 const CategoryH3 = styled.h3` 
@@ -26,10 +27,16 @@ const StyledPopup = styled(Popup)`
   opacity: 0.95;
 `
 
-const SjOptionsPanel = ({ sjOptions, updateSjOptions }) =>
-  <div>
+const SjOptionsPanel = ({ sjOptions, updateSjOptions, value=null }) => {
+  const handleTextInput = (e, name) => {
+    if (e.keyCode === 13) {
+      updateSjOptions({ [name]: value || e.target.value })
+    }
+  }
+
+  return <div>
     <CategoryH3>JUNCTION TRACK OPTIONS</CategoryH3><br />
-    <OptionDiv>Track height: <OptionInput type="text" defaultValue={sjOptions.trackHeight} onKeyUp={e => { if (e.keyCode === 13) updateSjOptions({ trackHeight: parseInt(e.target.value) })} } /> px</OptionDiv>
+    <OptionDiv>Track height: <OptionInput type="text" defaultValue={sjOptions.trackHeight} onKeyUp={e => handleTextInput(e, 'trackHeight', value=parseInt(e.target.value))} /> px</OptionDiv>
     <OptionDiv><Checkbox label="Show coverage" defaultChecked={!sjOptions.hideCoverage} onChange={(e, data) => updateSjOptions({ hideCoverage: !data.checked })} /></OptionDiv>
     <OptionDiv><Checkbox label="Show known junctions" defaultChecked={!sjOptions.hideAnnotated} onChange={(e, data) => updateSjOptions({ hideAnnotated: !data.checked })} /></OptionDiv>
     <OptionDiv><Checkbox label="Show unknown junctions" defaultChecked={!sjOptions.hideUnannotated} onChange={(e, data) => updateSjOptions({ hideUnannotated: !data.checked })} /></OptionDiv>
@@ -67,17 +74,17 @@ const SjOptionsPanel = ({ sjOptions, updateSjOptions }) =>
     <OptionDiv><Checkbox label="donor/acceptor motif" defaultChecked={sjOptions.labelMotif} onChange={(e, data) => updateSjOptions({ labelMotif: data.checked })} /></OptionDiv>
     <OptionDiv>
       <Checkbox label="known junction:" defaultChecked={sjOptions.labelIsAnnotatedJunction} onChange={(e, data) => updateSjOptions({ labelIsAnnotatedJunction: data.checked })} />
-      <OptionInput type="text" defaultValue={sjOptions.labelIsAnnotatedJunctionValue} onKeyUp={e => { if (e.keyCode === 13) updateSjOptions({ labelIsAnnotatedJunctionValue: e.target.value })}} style={{ width: '35px'}}  />
+      <OptionInput type="text" defaultValue={sjOptions.labelIsAnnotatedJunctionValue} onKeyUp={e => handleTextInput(e, 'labelIsAnnotatedJunctionValue')} style={{ width: '35px'}}  />
     </OptionDiv>
 
     <CategoryH3>JUNCTION TRACK FILTERS</CategoryH3><br />
     <div>
       <OptionDiv>Uniquely-mapped reads:</OptionDiv>
-      at least <OptionInput type="text" id="minUniquelyMappedReads" defaultValue="0" />
+      at least <OptionInput type="text" defaultValue={sjOptions.minUniquelyMappedReads} onKeyUp={e => handleTextInput(e, 'minUniquelyMappedReads', value=parseInt(e.target.value))} />
     </div>
     <div>
       <OptionDiv>Total reads:</OptionDiv>
-      at least <OptionInput type="text" id="minTotalReads" defaultValue="1" />
+      at least <OptionInput type="text"  defaultValue={sjOptions.minTotalReads} onKeyUp={e => handleTextInput(e, 'minTotalReads', value=parseInt(e.target.value))} />
     </div>
     <div>
       <OptionDiv>Fraction multi-mapped:
@@ -89,21 +96,22 @@ const SjOptionsPanel = ({ sjOptions, updateSjOptions }) =>
             <Icon style={{marginLeft: '8px'}} name="question circle outline" />
           } />
       </OptionDiv>
-      at most <OptionInput type="text" id="maxFractionMultiMappedReads" defaultValue="1" />
+      at most <OptionInput type="text" defaultValue={sjOptions.maxFractionMultiMappedReads} onKeyUp={e => handleTextInput(e, 'maxFractionMultiMappedReads', value=parseInt(e.target.value))} />
     </div>
     <div>
       <OptionDiv>Splice overhang base-pairs:</OptionDiv>
-      at least <OptionInput type="text" id="minSplicedAlignmentOverhang" defaultValue="0" />
+      at least <OptionInput type="text" defaultValue={sjOptions.minSplicedAlignmentOverhang} onKeyUp={e => handleTextInput(e, 'minSplicedAlignmentOverhang', value=parseInt(e.target.value))} />
     </div>
     <div>
       <OptionDiv>Donor/Acceptor Motifs:</OptionDiv>
       {
-        ['GT/AG', 'CT/AC', 'GC/AG', 'CT/GC', 'AT/AC', 'GT/AT', 'non-canonical'].map(motif =>
-          <OptionDiv key={motif}><Checkbox id="hideAnnotated" label={`Hide ${motif}`} /></OptionDiv>
+        MOTIFS.map(motif =>
+          <OptionDiv key={motif}><Checkbox label={`Show ${motif}`} defaultChecked={!sjOptions[`hideMotif${motif}`]} onChange={(e, data) => updateSjOptions({ [`hideMotif${motif}`]: !data.checked })} /></OptionDiv>
         )
       }
     </div>
   </div>
+}
 
 const BamOptionsPanel = ( { bamOptions, updateBamOptions }) => <div>
 

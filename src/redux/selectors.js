@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect'
 import { getGoogleAccessToken } from '../utils/googleAuth'
+import { MOTIFS } from './constants'
 
 export const getLocus = state => state.locus
 export const getGenome = state => state.genome
@@ -72,7 +73,7 @@ export const getTracks = createSelector(
           labelIsAnnotatedJunction: sjOptions.labelIsAnnotatedJunction && sjOptions.labelIsAnnotatedJunctionValue,
           hideAnnotatedJunctions: sjOptions.hideAnnotated,
           hideUnannotatedJunctions: sjOptions.hideUnannotated,
-          hideMotifs: sjOptions.hideMotifs, //options: 'GT/AG', 'CT/AC', 'GC/AG', 'CT/GC', 'AT/AC', 'GT/AT', 'non-canonical'
+          hideMotifs: MOTIFS.filter( motif => sjOptions[`hideMotif${motif}`] ), //options: 'GT/AG', 'CT/AC', 'GC/AG', 'CT/GC', 'AT/AC', 'GT/AT', 'non-canonical'
         }
       }
 
