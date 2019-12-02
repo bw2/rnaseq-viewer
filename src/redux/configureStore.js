@@ -1,4 +1,5 @@
 import { createStore, applyMiddleware, compose } from 'redux'
+//import logger from 'redux-logger'
 import thunkMiddleware from 'redux-thunk'
 import jsurl from 'jsurl'
 
@@ -6,22 +7,48 @@ import { loadState, saveState } from '../utils/localStorage'
 
 const INITIAL_STATE = {
   genome: 'hg38',
-  locus: 'chr15:12345-54321',
-  options: {},
+  locus: 'chr15:92,835,700-93,031,800',
+  sjOptions: {
+    trackHeight: 100,
+    hideCoverage: false,
+    hideAnnotated: false,
+    hideUnannotated: false,
+    colorBy: 'strand',
+    minUniquelyMappedReads: 1,
+    minTotalReads: 1,
+    maxFractionMultiMappedReads: 1,
+    minSplicedAlignmentOverhang: 0,
+    thicknessBasedOn: 'numUniqueReads', //options: numUniqueReads (default), numReads, isAnnotatedJunction
+    bounceHeightBasedOn: 'random', //options: random (default), distance, thickness
+    labelUniqueReadCount: true,
+    labelMultiMappedReadCount: true,
+    labelTotalReadCount: false,
+    labelMotif: true,
+    labelIsAnnotatedJunction: false,
+    labelIsAnnotatedJunctionValue: " [A]",
+    hideMotifs: [],
+  },
+  bamOptions: {
+    trackHeight: 100,
+    showSoftClips: true,
+    alignmentShading: 'strand',
+  },
   samplesInfo: window.INITIAL_TRACKS || [],
 }
 
-const PERSISTING_STATE = [
-  'options', 'locus', 'selectedSampleNames',
+const PERSIST_STATE_IN_URL = [
+  'locus', 'selectedSampleNames', 'sjOptions', 'bamOptions',
 ]
+
+const PERSIST_STATE_IN_LOCAL_STORAGE = []
 
 const persistStoreMiddleware = store => next => (action) => {
   const result = next(action)
   const nextState = store.getState()
-  PERSISTING_STATE.forEach((key) => { saveState(key, nextState[key]) })
+  PERSIST_STATE_IN_LOCAL_STORAGE.forEach((key) => { saveState(key, nextState[key]) })
 
   const stateToSave = Object.keys(nextState)
-    .filter(key => PERSISTING_STATE.includes(key))
+    .filter(key => PERSIST_STATE_IN_URL.includes(key))
     .reduce((obj, key) => {
       return {
         ...obj,
@@ -51,7 +78,7 @@ export const configureStore = (
 ) => {
 
   //restore any values from local storage
-  PERSISTING_STATE.forEach((key) => {
+  PERSIST_STATE_IN_LOCAL_STORAGE.forEach((key) => {
     const v = loadState(key)
     if (v !== undefined) {
       initialState[key] = v

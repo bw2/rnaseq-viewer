@@ -3,52 +3,40 @@ import PropTypes from 'prop-types'
 import styled from "styled-components"
 import { Checkbox, Icon, Popup } from 'semantic-ui-react'
 import { connect } from 'react-redux'
-import { getSamplesInfo, getSelectedSampleNames } from '../redux/selectors'
+import { getSamplesInfo, getSelectedSampleNames, getSjOptions, getBamOptions } from '../redux/selectors'
 
 
 const CategoryH3 = styled.h3` 
   display: inline-block;
   margin: 12px 0px 0px 0px !important;
 `
-const CategoryDetails = styled.div`
-  display: inline-block;
-  margin: 0px 0px 0px 15px;
-  color: #999;
-  whiteSpace: 'nowrap';
-`
 
 const OptionDiv = styled.div`
   padding-top:3px;
 `
 
-const OptionsPanel = ({options, updateOptions}) =>
+const OptionInput = styled.input`
+  display: inline;
+  width: 50px;
+  margin-left: 5px;
+  padding-left: 5px;
+`
+
+const StyledPopup = styled(Popup)`
+  opacity: 0.95;
+`
+
+const SjOptionsPanel = ({ sjOptions, updateSjOptions }) =>
   <div>
-    <CategoryH3>JUNCTION TRACK FILTERS</CategoryH3><br />
-    <OptionDiv>Uniquely-mapped reads:</OptionDiv><input type="text" id="minUniquelyMappedReads" defaultValue="0" />
-    <OptionDiv>Total reads:</OptionDiv>
-    <input type="text" id="minTotalReads" defaultValue="1" />
-    <OptionDiv>Fraction multi-mapped:<br/>
-      <span style={{fontSize: '9px'}}>1 - (uniquely-mapped / total read count)</span>
-    </OptionDiv><input type="text" id="maxFractionMultiMappedReads" defaultValue="1" />
-    <OptionDiv>Splice overhang base-pairs:</OptionDiv><input type="text" id="minSplicedAlignmentOverhang" defaultValue="0" />
-    <OptionDiv>Donor/Acceptor Motifs:</OptionDiv>
-    {
-      ['GT/AG', 'CT/AC', 'GC/AG', 'CT/GC', 'AT/AC', 'GT/AT', 'non-canonical'].map(motif =>
-        <OptionDiv key={motif}><label><Checkbox type="checkbox" id="hideAnnotatedJunctions" /> Hide {motif}</label></OptionDiv>
-      )
-    }
-    <CategoryH3>JUNCTION TRACK VIEW OPTIONS</CategoryH3><br />
-    <OptionDiv>
-      <label>
-      <Checkbox type="checkbox" id="hideCoverage" checked={options.hideCoverage} onChange={(e, data) => updateOptions({ hideCoverage: data.checked })} /> Hide coverage
-      </label>
-    </OptionDiv>
-    <OptionDiv><label><Checkbox type="checkbox" id="hideAnnotatedJunctions" /> Hide known junctions</label></OptionDiv>
-    <OptionDiv><label><Checkbox type="checkbox" id="hideUnannotatedJunctions" /> Hide novel junctions</label></OptionDiv>
+    <CategoryH3>JUNCTION TRACK OPTIONS</CategoryH3><br />
+    <OptionDiv>Track height: <OptionInput type="text" defaultValue={sjOptions.trackHeight} onKeyUp={e => { if (e.keyCode === 13) updateSjOptions({ trackHeight: parseInt(e.target.value) })} } /> px</OptionDiv>
+    <OptionDiv><Checkbox label="Show coverage" defaultChecked={!sjOptions.hideCoverage} onChange={(e, data) => updateSjOptions({ hideCoverage: !data.checked })} /></OptionDiv>
+    <OptionDiv><Checkbox label="Show known junctions" defaultChecked={!sjOptions.hideAnnotated} onChange={(e, data) => updateSjOptions({ hideAnnotated: !data.checked })} /></OptionDiv>
+    <OptionDiv><Checkbox label="Show unknown junctions" defaultChecked={!sjOptions.hideUnannotated} onChange={(e, data) => updateSjOptions({ hideUnannotated: !data.checked })} /></OptionDiv>
 
     <OptionDiv>Color by:</OptionDiv>
     <OptionDiv>
-      <select id="colorBy" name="colorBy">
+      <select defaultValue={sjOptions.colorBy} onChange={e => updateSjOptions({ colorBy: e.target.value })}>
         <option value="strand">strand</option>
         <option value="motif">donor/acceptor motif</option>
         <option value="numUniqueReads"># uniquely-mapped reads</option>
@@ -58,7 +46,7 @@ const OptionsPanel = ({options, updateOptions}) =>
     </OptionDiv>
     <OptionDiv>Junction thickness:</OptionDiv>
     <OptionDiv>
-      <select id="thicknessBasedOn" name="thicknessBasedOn">
+      <select defaultValue={sjOptions.thicknessBasedOn} onChange={e => updateSjOptions({ thicknessBasedOn: e.target.value })}>
         <option value="numUniqueReads"># uniquely-mapped reads</option>
         <option value="numReads"># total reads</option>
         <option value="isAnnotatedJunction">is known junction</option>
@@ -66,43 +54,90 @@ const OptionsPanel = ({options, updateOptions}) =>
     </OptionDiv>
     <OptionDiv>Junction bounce height:</OptionDiv>
     <OptionDiv>
-      <select id="bounceHeightBasedOn" name="bounceHeightBasedOn">
+      <select defaultValue={sjOptions.bounceHeightBasedOn} onChange={e => updateSjOptions({ bounceHeightBasedOn: e.target.value })}>
         <option value="random">random</option>
         <option value="distance">distance</option>
         <option value="thickness">thickness</option>
       </select>
     </OptionDiv>
-    <OptionDiv>Include in label: </OptionDiv>
-    <OptionDiv><label><Checkbox type="checkbox" id="hideAnnotatedJunctions" /> uniquely-mapped reads</label></OptionDiv>
-    <OptionDiv><label><Checkbox type="checkbox" id="hideAnnotatedJunctions" /> multi-mapped reads</label></OptionDiv>
-    <OptionDiv><label><Checkbox type="checkbox" id="hideAnnotatedJunctions" /> total reads</label></OptionDiv>
-    <OptionDiv><label><Checkbox type="checkbox" id="hideAnnotatedJunctions" /> donor/acceptor motif</label></OptionDiv>
-    <OptionDiv><label><Checkbox type="checkbox" id="hideAnnotatedJunctions" /> is known junction</label></OptionDiv>
-    <OptionDiv>known junction symbol:</OptionDiv>
-    <input type="text" id="labelIsAnnotatedJunction" defaultValue="[A]" />
+    <OptionDiv>Junction label:</OptionDiv>
+    <OptionDiv><Checkbox label="# uniquely-mapped" defaultChecked={sjOptions.labelUniqueReadCount} onChange={(e, data) => updateSjOptions({ labelUniqueReadCount: data.checked })} /></OptionDiv>
+    <OptionDiv><Checkbox label="# multi-mapped" defaultChecked={sjOptions.labelMultiMappedReadCount} onChange={(e, data) => updateSjOptions({ labelMultiMappedReadCount: data.checked })} /></OptionDiv>
+    <OptionDiv><Checkbox label="# total reads" defaultChecked={sjOptions.labelTotalReadCount} onChange={(e, data) => updateSjOptions({ labelTotalReadCount: data.checked })} /></OptionDiv>
+    <OptionDiv><Checkbox label="donor/acceptor motif" defaultChecked={sjOptions.labelMotif} onChange={(e, data) => updateSjOptions({ labelMotif: data.checked })} /></OptionDiv>
+    <OptionDiv>
+      <Checkbox label="known junction:" defaultChecked={sjOptions.labelIsAnnotatedJunction} onChange={(e, data) => updateSjOptions({ labelIsAnnotatedJunction: data.checked })} />
+      <OptionInput type="text" defaultValue={sjOptions.labelIsAnnotatedJunctionValue} onKeyUp={e => { if (e.keyCode === 13) updateSjOptions({ labelIsAnnotatedJunctionValue: e.target.value })}} style={{ width: '35px'}}  />
+    </OptionDiv>
+
+    <CategoryH3>JUNCTION TRACK FILTERS</CategoryH3><br />
+    <div>
+      <OptionDiv>Uniquely-mapped reads:</OptionDiv>
+      at least <OptionInput type="text" id="minUniquelyMappedReads" defaultValue="0" />
+    </div>
+    <div>
+      <OptionDiv>Total reads:</OptionDiv>
+      at least <OptionInput type="text" id="minTotalReads" defaultValue="1" />
+    </div>
+    <div>
+      <OptionDiv>Fraction multi-mapped:
+        <StyledPopup inverted
+          content="Allows filtering of junctions where most reads that span the junction are multi-mapped reads. For example, setting this to 0.79 will hide junctions where 8 out of 10 (or more) reads that span the junction are not uniquely mapped reads."
+          position="left center"
+          on="click"
+          trigger={
+            <Icon style={{marginLeft: '8px'}} name="question circle outline" />
+          } />
+      </OptionDiv>
+      at most <OptionInput type="text" id="maxFractionMultiMappedReads" defaultValue="1" />
+    </div>
+    <div>
+      <OptionDiv>Splice overhang base-pairs:</OptionDiv>
+      at least <OptionInput type="text" id="minSplicedAlignmentOverhang" defaultValue="0" />
+    </div>
+    <div>
+      <OptionDiv>Donor/Acceptor Motifs:</OptionDiv>
+      {
+        ['GT/AG', 'CT/AC', 'GC/AG', 'CT/GC', 'AT/AC', 'GT/AT', 'non-canonical'].map(motif =>
+          <OptionDiv key={motif}><Checkbox id="hideAnnotated" label={`Hide ${motif}`} /></OptionDiv>
+        )
+      }
+    </div>
   </div>
+
+const BamOptionsPanel = ( { bamOptions, updateBamOptions }) => <div>
+
+</div>
 
 
 class RightSideBar extends React.Component
 {
   static propTypes = {
-    options: PropTypes.object,
+    sjOptions: PropTypes.object,
     samplesInfo: PropTypes.array,
     selectedSampleNames: PropTypes.array,
-    updateOptions: PropTypes.func,
+    updateSjOptions: PropTypes.func,
+    updateBamOptions: PropTypes.func,
     updateSelectedSampleNames: PropTypes.func,
   }
 
   render() {
-    return <OptionsPanel
-      options={this.props.options}
-      updateOptions={this.props.updateOptions}
-    />
+    return <div>
+      <SjOptionsPanel
+        sjOptions={this.props.sjOptions}
+        updateSjOptions={this.props.updateSjOptions}
+      />
+      <BamOptionsPanel
+        bamOptions={this.props.bamOptions}
+        updateBamOptions={this.props.updateBamOptions}
+      />
+    </div>
   }
 }
 
 const mapStateToProps = state => ({
-  options: state.options,
+  sjOptions: getSjOptions(state),
+  bamOptions: getBamOptions(state),
   selectedSampleNames: getSelectedSampleNames(state),
   samplesInfo: getSamplesInfo(state),
 })
@@ -114,9 +149,15 @@ const mapDispatchToProps = dispatch => ({
       newValue: selectedSampleNames,
     })
   },
-  updateOptions: (newSettings) => {
+  updateSjOptions: (newSettings) => {
     dispatch({
-      type: 'UPDATE_OPTIONS',
+      type: 'UPDATE_SJ_OPTIONS',
+      updates: newSettings,
+    })
+  },
+  updateBamOptions: (newSettings) => {
+    dispatch({
+      type: 'UPDATE_BAM_OPTIONS',
       updates: newSettings,
     })
   },

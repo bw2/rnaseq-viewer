@@ -3,7 +3,8 @@ import PropTypes from 'prop-types'
 import styled from "styled-components"
 import { Checkbox, Icon, Popup } from 'semantic-ui-react'
 import { connect } from 'react-redux'
-import { getSamplesInfo, getSelectedSampleNames } from '../redux/selectors'
+import { getSamplesInfo, getSelectedSampleNames, getSjOptions, getBamOptions } from '../redux/selectors'
+
 
 
 const CategoryH3 = styled.h3` 
@@ -14,9 +15,12 @@ const CategoryDetails = styled.div`
   display: inline-block;
   margin: 0px 0px 0px 15px;
   color: #999;
-  whiteSpace: 'nowrap';
+  white-space: nowrap;
 `
 
+const StyledPopup = styled(Popup)`
+  opacity: 0.95;
+`
 
 const CategoryPanel = ({category}) =>
   <div>
@@ -43,7 +47,7 @@ const SamplePanel = ({sample, selectedSampleNames, updateSelectedSampleNames}) =
   <div>
     <Checkbox
       label={sample.name}
-      checked={selectedSampleNames.includes(sample.name)}
+      defaultChecked={selectedSampleNames.includes(sample.name)}
       onChange={(e, data) =>
         updateSelectedSampleNames(
           data.checked ? [...selectedSampleNames, data.label] : selectedSampleNames.filter(x => x !== data.label),
@@ -54,9 +58,14 @@ const SamplePanel = ({sample, selectedSampleNames, updateSelectedSampleNames}) =
   </div>
 
 const SampleDetails = ({sample}) => {
-  return (sample.description ? <Popup content={sample.description} trigger={
-    <Icon style={{marginLeft: '10px'}} name="question circle outline" />
-  } /> : null)
+  return (sample.description ?
+    <StyledPopup inverted
+      content={sample.description}
+      position="right center"
+      on="click"
+      trigger={
+        <Icon style={{marginLeft: '10px'}} name="question circle outline" />
+      } /> : null)
 }
 
 
@@ -64,18 +73,20 @@ const SampleDetails = ({sample}) => {
 class LeftSideBar extends React.Component
 {
   static propTypes = {
-    options: PropTypes.object,
     samplesInfo: PropTypes.array,
     selectedSampleNames: PropTypes.array,
-    updateOptions: PropTypes.func,
+    sjOptions: PropTypes.object,
+    bamOptions: PropTypes.object,
     updateSelectedSampleNames: PropTypes.func,
+    updateSjOptions: PropTypes.func,
+    updateBamOptions: PropTypes.func,
   }
 
   render() {
     //const params = new URLSearchParams(window.location.search)
     return (
       <div>
-        <Checkbox label="also show BAM tracks" checked={this.props.options.showBams} onChange={(e, data) => this.props.updateOptions({ showBams: data.checked })} />
+        <Checkbox label="show BAM tracks" defaultChecked={this.props.bamOptions.showBams} onChange={(e, data) => this.props.updateBamOptions({ showBams: data.checked })} />
 
         <SamplesPanel
           samplesInfo={this.props.samplesInfo}
@@ -87,9 +98,11 @@ class LeftSideBar extends React.Component
 }
 
 const mapStateToProps = state => ({
-  options: state.options,
   selectedSampleNames: getSelectedSampleNames(state),
   samplesInfo: getSamplesInfo(state),
+  sjOptions: getSjOptions(state),
+  bamOptions: getBamOptions(state),
+
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -99,9 +112,15 @@ const mapDispatchToProps = dispatch => ({
       newValue: selectedSampleNames,
     })
   },
-  updateOptions: (newSettings) => {
+  updateSjOptions: (newSettings) => {
     dispatch({
-      type: 'UPDATE_OPTIONS',
+      type: 'UPDATE_SJ_OPTIONS',
+      updates: newSettings,
+    })
+  },
+  updateBamOptions: (newSettings) => {
+    dispatch({
+      type: 'UPDATE_BAM_OPTIONS',
       updates: newSettings,
     })
   },

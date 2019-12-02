@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import igv from 'igv'
 import { connect } from 'react-redux'
 
-import { getGenome, getLocus, getTracks } from '../redux/selectors'
+import { getGenome, getLocus, getTracks, getSjOptions, getBamOptions } from '../redux/selectors'
 
 const IGV_SETTINGS = {
   showKaryo: false,
@@ -39,6 +39,8 @@ class IGV extends React.Component {
     tracks: PropTypes.array.isRequired,
     locusChangedHandler: PropTypes.func,
     trackRemovedHandler: PropTypes.func,
+    sjOptions: PropTypes.object,
+    bamOptions: PropTypes.object,
   }
 
   constructor(props) {
@@ -60,14 +62,14 @@ class IGV extends React.Component {
       return
     }
 
-    let options = {
+    let igvBrowserOptions = {
       ...IGV_SETTINGS,
       locus: this.props.locus,
       genome: this.props.genome,
       tracks: this.props.tracks,
     }
 
-    igv.createBrowser(this.container, options).then((browser) => {
+    igv.createBrowser(this.container, igvBrowserOptions).then((browser) => {
       this.browser = browser
 
       if (this.props.locusChangedHandler) {
@@ -80,20 +82,32 @@ class IGV extends React.Component {
     })
   }
 
-  shouldComponentUpdate = (nextProps, nextState) => {
+  shouldComponentUpdate = nextProps => {
     if (!this.container) {
       return false
     }
 
-    console.log('IGV.shouldComponentUpdate', nextProps, nextState)
-    let tracksToAdd = nextProps.tracks.reduce((acc, item) => {
+    let nextTrackSettingsByTrackName = nextProps.tracks.reduce((acc, item) => {
       return {[item.name]: item, ...acc}
     }, {})
 
+    console.log('IGV.nextProps:', nextProps )
+    // update or remove existing tracks
     for (let track of this.props.tracks) {
-      if (tracksToAdd[track.name]) {
-        delete tracksToAdd[track.name]
+      const nextTrackSettings = nextTrackSettingsByTrackName[track.name]
+      if (nextTrackSettings) {
+        if ( (nextProps.sjOptions !== this.props.sjOptions && ['merged', 'wig', 'junctions'].includes(track.type) ) ||
+             (nextProps.bamOptions !== this.props.bamOptions && 'bam' === track.type)
+        ) {
+          this.browser.removeTrackByName(track.name)
+          this.browser.loadTrack(nextTrackSettings)
+        }
+
+        // delete track from nextTrackSettingsByTrackName to indicate that it's still selected
+        delete nextTrackSettingsByTrackName[track.name]
+
       } else {
+        // remove track that was de-selected
         try {
           this.browser.removeTrackByName(track.name)
         } catch(e) {
@@ -102,7 +116,8 @@ class IGV extends React.Component {
       }
     }
 
-    for (let track of Object.values(tracksToAdd)) {
+    // load any newly-selected track(s)
+    for (let track of Object.values(nextTrackSettingsByTrackName)) {
       try {
         this.browser.loadTrack(track)
       } catch(e) {
@@ -139,6 +154,8 @@ const mapStateToProps = state => ({
   genome: getGenome(state),
   locus: getLocus(state),
   tracks: getTracks(state),
+  sjOptions: getSjOptions(state),
+  bamOptions: getBamOptions(state),
 })
 
 export { IGV as IGVComponent }
