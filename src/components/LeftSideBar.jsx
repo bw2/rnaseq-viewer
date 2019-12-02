@@ -68,8 +68,6 @@ const SampleDetails = ({sample}) => {
       } /> : null)
 }
 
-
-
 class LeftSideBar extends React.Component
 {
   static propTypes = {
