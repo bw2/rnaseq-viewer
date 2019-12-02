@@ -10,7 +10,7 @@ const INITIAL_STATE = {
   genome: 'hg38',
   locus: 'chr15:92,835,700-93,031,800',
   sjOptions: {
-    trackHeight: 100,
+    trackHeight: 170,
     hideCoverage: false,
     hideAnnotated: false,
     hideUnannotated: false,
